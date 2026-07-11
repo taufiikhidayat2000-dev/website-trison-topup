@@ -2,8 +2,9 @@
 import { formatCurrency } from '@/lib/utils';
 import { PPOBProductDataItem } from '@/types/cms/ppob';
 import { ClockIcon } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
-defineProps<{
+const props = defineProps<{
     products: PPOBProductDataItem[];
     selectedProduct: number | null;
 }>();
@@ -11,6 +12,29 @@ defineProps<{
 const emit = defineEmits<{
     'update:selectedProduct': [value: number];
 }>();
+
+// Distinct product categories present among this brand's products, in order of first appearance
+const categories = computed(() => {
+    const seen = new Map<number, string>();
+    for (const product of props.products) {
+        if (product.product_category && !seen.has(product.product_category.id)) {
+            seen.set(product.product_category.id, product.product_category.name);
+        }
+    }
+    return Array.from(seen, ([id, name]) => ({ id, name }));
+});
+
+// Active category filter (null = show all products)
+const activeCategory = ref<number | null>(null);
+
+const filteredProducts = computed(() => {
+    if (activeCategory.value === null) {
+        return props.products;
+    }
+    return props.products.filter(
+        (product) => product.p_p_o_b_product_category_id === activeCategory.value,
+    );
+});
 </script>
 
 <template>
@@ -26,11 +50,43 @@ const emit = defineEmits<{
         </h2>
 
         <div
-            v-if="products && products.length > 0"
+            v-if="categories.length > 0"
+            class="mb-4 flex flex-wrap gap-2"
+        >
+            <button
+                type="button"
+                class="rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors"
+                :class="
+                    activeCategory === null
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border/50 text-muted-foreground hover:border-primary/50'
+                "
+                @click="activeCategory = null"
+            >
+                Semua
+            </button>
+            <button
+                v-for="category in categories"
+                :key="category.id"
+                type="button"
+                class="rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors"
+                :class="
+                    activeCategory === category.id
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border/50 text-muted-foreground hover:border-primary/50'
+                "
+                @click="activeCategory = category.id"
+            >
+                {{ category.name }}
+            </button>
+        </div>
+
+        <div
+            v-if="filteredProducts && filteredProducts.length > 0"
             class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
         >
             <button
-                v-for="product in products"
+                v-for="product in filteredProducts"
                 :key="product.id"
                 class="flex h-full flex-col overflow-hidden rounded-xl border-2 text-left transition-all"
                 :class="
@@ -85,7 +141,11 @@ const emit = defineEmits<{
             </button>
         </div>
         <div v-else class="py-8 text-center text-sm text-muted-foreground">
-            Tidak ada produk tersedia
+            {{
+                activeCategory !== null
+                    ? 'Tidak ada produk pada kategori ini'
+                    : 'Tidak ada produk tersedia'
+            }}
         </div>
     </section>
 </template>

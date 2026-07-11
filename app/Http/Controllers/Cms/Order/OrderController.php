@@ -37,7 +37,7 @@ class OrderController extends Controller
         $topupStatusFilter = $request?->topup_status ?? [];
 
         $query = Order::with('brand', 'product', 'payment.media')
-            ->whereHas('product', fn ($q) => $q->where('provider', 'digiflazz'))
+            ->whereHas('product', fn ($q) => $q->whereIn('provider', ['digiflazz', 'lapakgaming']))
             ->withoutArchive();
 
         // Apply payment status filter
@@ -172,7 +172,7 @@ class OrderController extends Controller
     {
         Gate::authorize('update'.$this->resource);
 
-        $action->handle('digiflazz');
+        $action->handle(['digiflazz', 'lapakgaming']);
 
         return back()->with('success', 'All orders archived successfully');
     }

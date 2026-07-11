@@ -4,6 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Models\Order\Order;
+use App\Models\Wallet\BalanceMutation;
+use App\Models\Wallet\Deposit;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,6 +36,7 @@ class User extends Authenticatable implements HasMedia
         'email',
         'phone',
         'password',
+        'is_active',
     ];
 
     /**
@@ -57,6 +61,8 @@ class User extends Authenticatable implements HasMedia
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'balance' => 'integer',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -82,5 +88,20 @@ class User extends Authenticatable implements HasMedia
     public function isUser()
     {
         return $this->hasRole('user');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function balanceMutations()
+    {
+        return $this->hasMany(BalanceMutation::class);
+    }
+
+    public function deposits()
+    {
+        return $this->hasMany(Deposit::class);
     }
 }

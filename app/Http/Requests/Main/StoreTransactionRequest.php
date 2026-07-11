@@ -26,7 +26,7 @@ class StoreTransactionRequest extends FormRequest
             'email' => 'required|email|max:255',
             'name' => 'required|string|max:255',
             'phone' => 'required|numeric',
-            'payment_type' => 'required|in:automatic,manual',
+            'payment_type' => 'required|in:automatic,manual,balance',
             'payment_method' => 'required|string|max:255', // in:qris,bca,bni,bri,mandiri,permata
             'voucher_code' => 'nullable|string|exists:vouchers,code',
         ];
@@ -37,6 +37,20 @@ class StoreTransactionRequest extends FormRequest
      */
     protected function passedValidation(): void
     {
+        if ($this->payment_type === 'balance') {
+            if (! auth()->check()) {
+                throw ValidationException::withMessages([
+                    'payment_type' => 'Anda harus login untuk membayar menggunakan saldo.',
+                ]);
+            }
+
+            if (! auth()->user()->is_active) {
+                throw ValidationException::withMessages([
+                    'payment_type' => 'Akun Anda tidak aktif.',
+                ]);
+            }
+        }
+
         $product = PPOBProduct::find($this->product_id);
 
         // Pro Version

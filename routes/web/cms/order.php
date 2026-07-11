@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Cms\Order\AllOrderController;
 use App\Http\Controllers\Cms\Order\ArchiveOrderController;
 use App\Http\Controllers\Cms\Order\GiftOrderController;
 use App\Http\Controllers\Cms\Order\ManualTopupOrderController;
@@ -10,6 +11,9 @@ Route::group([
     'prefix' => 'order',
     'as' => 'order.',
 ], function () {
+    // All Orders (unified Topup + Gift + Manual Topup view)
+    Route::get('all-orders', AllOrderController::class)->name('all-orders.index');
+
     // Topup Orders
     Route::get('topup-orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('topup-orders/create', [OrderController::class, 'create'])->name('orders.create');

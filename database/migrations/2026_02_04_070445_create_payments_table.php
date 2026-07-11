@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->string('driver')->default('midtrans');
+            $table->string('driver')->default('linkqu');
             $table->morphs('payable');
             $table->string('order_id')->unique();
             $table->string('transaction_id')->nullable()->unique();

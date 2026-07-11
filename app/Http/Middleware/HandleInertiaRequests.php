@@ -55,6 +55,7 @@ class HandleInertiaRequests extends Middleware
                         'name' => $user->name,
                         'email' => $user->email,
                         'phone' => $user->phone,
+                        'balance' => $user->balance,
                         'permissions' => $user->getAllPermissions()->pluck('name'),
                         'roles' => $user->getRoleNames(),
                     ];
@@ -66,6 +67,8 @@ class HandleInertiaRequests extends Middleware
             'setting' => getSetting(),
             'app_url' => config('app.url'),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'importResult' => $request->session()->get('importResult'),
+            'newPassword' => $request->session()->get('newPassword'),
         ];
     }
 }

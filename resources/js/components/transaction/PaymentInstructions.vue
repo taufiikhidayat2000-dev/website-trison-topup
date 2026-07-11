@@ -7,7 +7,7 @@ import { formatCurrency } from '@/lib/utils';
 import { PaymentDataItem } from '@/types/cms/main';
 import { useForm, usePage } from '@inertiajs/vue3';
 import dayjs from 'dayjs';
-import { Clock, Copy, Upload } from 'lucide-vue-next';
+import { CheckCircle2, Clock, Copy, Upload, Wallet } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 const props = defineProps<{
@@ -79,10 +79,10 @@ const uploadProof = () => {
             Instruksi Pembayaran
         </h3>
 
-        <!-- Midtrans Bank Transfer -->
+        <!-- Automatic Gateway Bank Transfer (LinkQu / Midtrans) -->
         <div
             v-if="
-                payment.driver === 'midtrans' &&
+                ['linkqu', 'midtrans'].includes(payment.driver) &&
                 payment.payment_type === 'bank_transfer'
             "
             class="space-y-4"
@@ -144,10 +144,11 @@ const uploadProof = () => {
             </div>
         </div>
 
-        <!-- Midtrans QRIS -->
+        <!-- Automatic Gateway QRIS (LinkQu / Midtrans) -->
         <div
             v-else-if="
-                payment.driver === 'midtrans' && payment.payment_type === 'qris'
+                ['linkqu', 'midtrans'].includes(payment.driver) &&
+                payment.payment_type === 'qris'
             "
             class="space-y-4"
         >
@@ -200,6 +201,46 @@ const uploadProof = () => {
                     <li>Scan QR Code di atas</li>
                     <li>Konfirmasi pembayaran</li>
                 </ol>
+            </div>
+        </div>
+
+        <!-- Balance Payment (instant, always already paid) -->
+        <div v-else-if="payment.driver === 'balance'" class="space-y-4">
+            <div
+                class="flex items-center gap-4 rounded-xl border border-emerald-500/50 bg-emerald-500/10 p-5 text-emerald-600"
+            >
+                <div
+                    class="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/20"
+                >
+                    <CheckCircle2 class="h-6 w-6" />
+                </div>
+                <div>
+                    <p
+                        class="text-xs font-bold tracking-wider uppercase opacity-80"
+                    >
+                        Pembayaran Berhasil
+                    </p>
+                    <p class="text-sm font-medium">
+                        Dibayar menggunakan Saldo pada
+                        {{
+                            dayjs(payment.paid_at)
+                                .locale('id')
+                                .format('DD MMM YYYY, HH:mm')
+                        }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="rounded-lg bg-muted/50 p-4">
+                <p
+                    class="mb-2 flex items-center gap-2 text-sm text-muted-foreground"
+                >
+                    <Wallet class="h-4 w-4" />
+                    Total Dibayar:
+                </p>
+                <p class="text-2xl font-bold text-primary">
+                    {{ formatCurrency(totalAmount) }}
+                </p>
             </div>
         </div>
 

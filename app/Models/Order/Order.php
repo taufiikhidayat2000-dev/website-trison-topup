@@ -7,17 +7,25 @@ use App\Enums\PaymentStatusEnum;
 use App\Models\Payment\Payment;
 use App\Models\PPOB\PPOBBrand;
 use App\Models\PPOB\PPOBProduct;
+use App\Models\Review\Review;
 use App\Models\User;
 use App\Models\Voucher\VoucherUse;
+use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Order extends Model implements HasMedia
 {
-    use InteractsWithMedia;
+    use HasFactory, InteractsWithMedia;
+
+    protected static function newFactory()
+    {
+        return OrderFactory::new();
+    }
 
     protected $fillable = [
         'user_id',
@@ -80,6 +88,37 @@ class Order extends Model implements HasMedia
     public function voucherUse()
     {
         return $this->morphOne(VoucherUse::class, 'usable');
+    }
+
+    public function review()
+    {
+        return $this->hasOne(Review::class);
+    }
+
+    /**
+     * Whether the order has actually been delivered to the customer, and is
+     * therefore eligible for a review. Delivery is tracked differently per
+     * provider: digiflazz/lapakgaming update `topup_status`, while gift and
+     * manual_topup orders track completion inside the `submited` JSON blob
+     * (see DeliveryProgressCard.vue for the matching frontend logic).
+     */
+    public function isDelivered(): bool
+    {
+        if ($this->payment_status !== PaymentStatusEnum::SETTLEMENT) {
+            return false;
+        }
+
+        if (in_array($this->product?->provider, ['digiflazz', 'lapakgaming'])) {
+            return $this->topup_status === DigiflazzStatusEnum::SUCCESS;
+        }
+
+        // gift / manual_topup
+        return (bool) ($this->submited['gift_send'] ?? false) || (bool) ($this->submited['done'] ?? false);
+    }
+
+    public function isEligibleForReview(): bool
+    {
+        return $this->isDelivered() && ! $this->review()->exists();
     }
 
     #[Scope]

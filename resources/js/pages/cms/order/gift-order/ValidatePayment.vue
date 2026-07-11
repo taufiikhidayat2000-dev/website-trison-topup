@@ -200,8 +200,9 @@ const rejectPayment = async (close: () => void) => {
                         <!-- QRIS QR Code -->
                         <div
                             v-if="
-                                order.payment.driver === 'midtrans' &&
-                                order.payment.payment_type === 'qris'
+                                ['linkqu', 'midtrans'].includes(
+                                    order.payment.driver,
+                                ) && order.payment.payment_type === 'qris'
                             "
                             class="flex justify-center"
                         >

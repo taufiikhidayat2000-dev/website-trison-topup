@@ -8,7 +8,7 @@ import StatsCardsSkeleton from '@/components/dashboard/StatsCardsSkeleton.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes/cms';
 import { OrderDataItem } from '@/types/cms/main';
-import { Deferred, Head } from '@inertiajs/vue3';
+import { Deferred, Head, usePoll } from '@inertiajs/vue3';
 
 interface DashboardStats {
     notProcessed: number;
@@ -32,6 +32,10 @@ const breadcrumbs = [
         href: dashboard().url,
     },
 ];
+
+usePoll(5000, {
+    only: ['stats', 'ordersWaiting', 'ordersNotProcessed', 'ordersPaymentReview'],
+});
 </script>
 
 <template>

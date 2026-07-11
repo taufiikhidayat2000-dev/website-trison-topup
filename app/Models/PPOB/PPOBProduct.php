@@ -14,6 +14,7 @@ class PPOBProduct extends Model implements HasMedia
 
     protected $fillable = [
         'p_p_o_b_brand_id',
+        'p_p_o_b_product_category_id',
         'name',
         'slug',
         'sku',
@@ -45,5 +46,10 @@ class PPOBProduct extends Model implements HasMedia
     public function brand()
     {
         return $this->belongsTo(PPOBBrand::class, 'p_p_o_b_brand_id');
+    }
+
+    public function productCategory()
+    {
+        return $this->belongsTo(PPOBProductCategory::class, 'p_p_o_b_product_category_id');
     }
 }

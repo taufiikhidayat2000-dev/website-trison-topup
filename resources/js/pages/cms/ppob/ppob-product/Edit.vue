@@ -18,7 +18,11 @@ import {
 import usePPOBQuery from '@/composables/query/usePPOBQuery';
 import { useSwal } from '@/composables/useSwal';
 
-import { PPOBCategoryDataItem, PPOBProductDataItem } from '@/types/cms/ppob';
+import {
+    PPOBCategoryDataItem,
+    PPOBProductCategoryDataItem,
+    PPOBProductDataItem,
+} from '@/types/cms/ppob';
 import { Form } from '@inertiajs/vue3';
 import { Modal } from '@inertiaui/modal-vue';
 import { Save } from 'lucide-vue-next';
@@ -26,6 +30,7 @@ import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
     categories: PPOBCategoryDataItem[];
+    productCategories: PPOBProductCategoryDataItem[];
     product: PPOBProductDataItem;
 }>();
 
@@ -168,6 +173,42 @@ watch(selectedBrand, () => {
                 </div>
 
                 <div class="grid gap-2">
+                    <Label for="p_p_o_b_product_category_id">
+                        Product Category
+                    </Label>
+                    <InputDescription>
+                        Optional grouping used to filter products within a
+                        brand on the storefront (e.g. Diamonds, Weekly Pass).
+                    </InputDescription>
+                    <Select
+                        name="p_p_o_b_product_category_id"
+                        :default-value="
+                            product.p_p_o_b_product_category_id
+                                ? String(product.p_p_o_b_product_category_id)
+                                : undefined
+                        "
+                    >
+                        <SelectTrigger
+                            id="p_p_o_b_product_category_id"
+                            class="mt-1 w-full"
+                        >
+                            <SelectValue placeholder="Select a product category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem :value="null">-- None --</SelectItem>
+                            <SelectItem
+                                v-for="productCategory in productCategories"
+                                :key="productCategory.id"
+                                :value="String(productCategory.id)"
+                            >
+                                {{ productCategory.name }}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <InputError :message="errors.p_p_o_b_product_category_id" />
+                </div>
+
+                <div class="grid gap-2">
                     <Label for="name">Name</Label>
                     <InputDescription>
                         The name of the PPOB product.
@@ -196,6 +237,9 @@ watch(selectedBrand, () => {
                         <SelectContent>
                             <SelectItem value="digiflazz">
                                 Digiflazz
+                            </SelectItem>
+                            <SelectItem value="lapakgaming">
+                                LapakGaming
                             </SelectItem>
                             <SelectItem value="gift"> Gift </SelectItem>
                             <SelectItem value="manual_topup">

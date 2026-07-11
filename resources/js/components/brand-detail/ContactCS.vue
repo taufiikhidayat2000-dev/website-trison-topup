@@ -4,7 +4,7 @@ import { Headphones } from 'lucide-vue-next';
 </script>
 
 <template>
-    <div class="mt-5 rounded-lg border border-border/50 bg-card p-6 shadow-sm">
+    <div class="rounded-lg border border-border/50 bg-card p-6 shadow-sm">
         <div class="flex items-start gap-3">
             <div
                 class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10"

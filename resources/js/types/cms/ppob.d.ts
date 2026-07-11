@@ -36,9 +36,22 @@ export interface PPOBBrandDataItem {
     products?: PPOBProductDataItem[];
 }
 
+export interface PPOBProductCategoryDataItem {
+    id: number;
+    name: string;
+    slug: string;
+    description?: string;
+    image?: string;
+    status: boolean;
+    created_at: string;
+    updated_at: string;
+    products_count?: number;
+}
+
 export interface PPOBProductDataItem {
     id: number;
     p_p_o_b_brand_id: number;
+    p_p_o_b_product_category_id?: number | null;
     provider?: string;
     name: string;
     slug: string;
@@ -52,6 +65,7 @@ export interface PPOBProductDataItem {
     created_at: string;
     updated_at: string;
     brand?: PPOBBrandDataItem;
+    product_category?: PPOBProductCategoryDataItem;
 }
 
 export interface PPOBDepositDataItem {

@@ -27,7 +27,9 @@ class SuperadminMenuSeeder extends Seeder
         $this->orderMenu();
         $this->ppobMenu();
         $this->webMenu();
+        $this->memberMenu();
         $this->settingMenu();
+        $this->reportMenu();
         $this->managementMenu();
     }
 
@@ -46,6 +48,15 @@ class SuperadminMenuSeeder extends Seeder
 
     public function orderMenu()
     {
+        Menu::create([
+            'role_id' => $this->role->id,
+            'name' => 'All Orders',
+            'url' => '/cms/order/all-orders',
+            'icon' => 'ListOrdered',
+            'order' => 4,
+            'active_pattern' => '/cms/order/all-orders',
+            'status' => 1,
+        ]);
         Menu::create([
             'role_id' => $this->role->id,
             'name' => 'Topup Orders',
@@ -121,10 +132,26 @@ class SuperadminMenuSeeder extends Seeder
         ]);
         $ppob->subMenu()->create([
             'role_id' => $this->role->id,
-            'name' => 'Migrate Products',
-            'url' => '/cms/ppob/import-digiflazz',
+            'name' => 'Product Categories',
+            'url' => '/cms/ppob/product-categories',
             'order' => 4,
+            'active_pattern' => '/cms/ppob/product-categories',
+            'status' => 1,
+        ]);
+        $ppob->subMenu()->create([
+            'role_id' => $this->role->id,
+            'name' => 'Migrate Products (Digiflazz)',
+            'url' => '/cms/ppob/import-digiflazz',
+            'order' => 5,
             'active_pattern' => '/cms/ppob/import-digiflazz',
+            'status' => 1,
+        ]);
+        $ppob->subMenu()->create([
+            'role_id' => $this->role->id,
+            'name' => 'Migrate Products (LapakGaming)',
+            'url' => '/cms/ppob/import-lapakgaming',
+            'order' => 6,
+            'active_pattern' => '/cms/ppob/import-lapakgaming',
             'status' => 1,
         ]);
     }
@@ -164,6 +191,14 @@ class SuperadminMenuSeeder extends Seeder
             'active_pattern' => '/cms/web/vouchers',
             'status' => 1,
         ]);
+        $web->subMenu()->create([
+            'role_id' => $this->role->id,
+            'name' => 'Reviews',
+            'url' => '/cms/web/reviews',
+            'order' => 4,
+            'active_pattern' => '/cms/web/reviews',
+            'status' => 1,
+        ]);
     }
 
     public function settingMenu()
@@ -175,6 +210,48 @@ class SuperadminMenuSeeder extends Seeder
             'icon' => 'Settings',
             'order' => 30,
             'active_pattern' => '/cms/setting/settings',
+            'status' => 1,
+        ]);
+    }
+
+    public function memberMenu()
+    {
+        $member = Menu::create([
+            'role_id' => $this->role->id,
+            'name' => 'Members',
+            'url' => '#',
+            'icon' => 'Users',
+            'order' => 35,
+            'active_pattern' => '/cms/members',
+            'status' => 1,
+        ]);
+        $member->subMenu()->create([
+            'role_id' => $this->role->id,
+            'name' => 'List Member',
+            'url' => '/cms/members',
+            'order' => 1,
+            'active_pattern' => '/cms/members',
+            'status' => 1,
+        ]);
+        $member->subMenu()->create([
+            'role_id' => $this->role->id,
+            'name' => 'Deposits',
+            'url' => '/cms/deposits',
+            'order' => 2,
+            'active_pattern' => '/cms/deposits',
+            'status' => 1,
+        ]);
+    }
+
+    public function reportMenu()
+    {
+        Menu::create([
+            'role_id' => $this->role->id,
+            'name' => 'Reports',
+            'url' => '/cms/reports/sales',
+            'icon' => 'BarChart3',
+            'order' => 40,
+            'active_pattern' => '/cms/reports',
             'status' => 1,
         ]);
     }

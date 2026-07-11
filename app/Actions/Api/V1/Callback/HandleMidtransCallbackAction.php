@@ -7,6 +7,7 @@ use App\Mail\PaymentFailed;
 use App\Mail\PaymentSuccess;
 use App\Models\Order\Order;
 use App\Models\Payment\Payment;
+use App\Services\LapakGamingService;
 use App\Services\MidtransService;
 use App\Services\VodaService;
 use Illuminate\Support\Facades\Log;
@@ -132,9 +133,16 @@ class HandleMidtransCallbackAction
             // If the provider is Digiflazz, create transaction to Digiflazz
             if ($order->brand->provider === 'digiflazz') {
                 Digiflazz::createPrepaidTransaction(
-                     productCode: $order->product->sku,
-                     customerNo: $customer,
-                     refId: $order->reference,
+                    productCode: $order->product->sku,
+                    customerNo: $customer,
+                    refId: $order->reference,
+                );
+            } elseif ($order->brand->provider === 'lapakgaming') {
+                app(LapakGamingService::class)->createOrder(
+                    productCode: $order->product->sku,
+                    userId: $accountId,
+                    serverId: $serverId ?: null,
+                    partnerReferenceId: $order->reference,
                 );
             }
 
@@ -158,28 +166,6 @@ class HandleMidtransCallbackAction
             ]), $message);
             $message = str_replace('{cs_link}', getSetting('cs'), $message);
         }
-
-        // // Send message via Voda
-        // $isNotificationError = false;
-        // try {
-        //     // Send message via Voda
-        //     $this->vodaService->sendMessage(
-        //         phone: $order->phone,
-        //         message: $message,
-        //         linkPreview: true,
-        //     );
-        // } catch (\Exception $e) {
-        //     Log::error('Failed to send Voda message: '.$e->getMessage());
-        //     $isNotificationError = true;
-        // }
-
-        // // Create notification record
-        // $order->notifications()->create([
-        //     'provider' => 'voda',
-        //     'title' => 'Payment '.($isSuccess ? 'Confirmed' : 'Rejected'),
-        //     'content' => $message,
-        //     'error' => $isNotificationError,
-        // ]);
 
         // Send message via email
         Mail::to($order->email)->send(

@@ -1,11 +1,15 @@
 <?php
 
+use App\Http\Controllers\Main\AfterLoginController;
 use App\Http\Controllers\Main\BrandController;
 use App\Http\Controllers\Main\CheckGameAccountController;
 use App\Http\Controllers\Main\ContentController;
+use App\Http\Controllers\Main\CreateDepositController;
 use App\Http\Controllers\Main\HomeController;
 use App\Http\Controllers\Main\PasswordController;
 use App\Http\Controllers\Main\ProfileController;
+use App\Http\Controllers\Main\ReviewController;
+use App\Http\Controllers\Main\ShowDepositController;
 use App\Http\Controllers\Main\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,16 +24,14 @@ Route::get('/transaction', [TransactionController::class, 'check'])->name('trans
 Route::put('/transaction/{order}', [TransactionController::class, 'update'])->name('transaction.update');
 Route::post('/check-game-account', [CheckGameAccountController::class, 'check'])->name('check-game-account');
 Route::post('/check-voucher', [TransactionController::class, 'checkVoucher'])->name('check-voucher');
+Route::post('/transaction/{order}/review', [ReviewController::class, 'store'])->name('transaction.review.store');
 
 Route::get('/profile', [ProfileController::class, 'index'])->name('main.profile.index')->middleware('auth');
 Route::patch('/profile', [ProfileController::class, 'update'])->name('main.profile.update')->middleware('auth');
 Route::patch('/password', [PasswordController::class, 'update'])->name('main.password.update')->middleware('auth');
 
+Route::post('/deposits', CreateDepositController::class)->name('wallet.deposits.store')->middleware('auth');
+Route::get('/deposits/{deposit}', ShowDepositController::class)->name('wallet.deposits.show')->middleware('auth');
+
 // After login
-Route::get('/after-login', function () {
-    if (auth()->user()->hasRole(['superadmin', 'admin'])) {
-        return to_route('cms.dashboard');
-    } else {
-        return to_route('home');
-    }
-})->name('after-login')->middleware('auth');
+Route::get('/after-login', AfterLoginController::class)->name('after-login')->middleware('auth');

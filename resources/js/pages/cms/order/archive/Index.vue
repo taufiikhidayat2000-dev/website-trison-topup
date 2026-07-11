@@ -174,6 +174,8 @@ const handleUnarchiveAll = () => {
                         :class="{
                             'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400':
                                 row.product?.provider === 'digiflazz',
+                            'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400':
+                                row.product?.provider === 'lapakgaming',
                             'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400':
                                 row.product?.provider === 'gift',
                             'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400':
@@ -193,6 +195,8 @@ const handleUnarchiveAll = () => {
                             :class="{
                                 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400':
                                     row.payment?.driver === 'midtrans',
+                                'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400':
+                                    row.payment?.driver === 'linkqu',
                                 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400':
                                     row.payment?.driver === 'manual',
                                 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400':
@@ -272,13 +276,14 @@ const handleUnarchiveAll = () => {
                 </template>
                 <template #actions="{ row }">
                     <div class="flex items-center justify-center gap-2">
-                        <!-- View Order Details (Digiflazz) -->
+                        <!-- View Order Details (Digiflazz / LapakGaming) -->
                         <ModalLink
                             :href="showOrder({ order: row.reference }).url"
                             slideover
                             v-if="
-                                row.product?.provider === 'digiflazz' &&
-                                hasPermission('view' + resource)
+                                ['digiflazz', 'lapakgaming'].includes(
+                                    row.product?.provider,
+                                ) && hasPermission('view' + resource)
                             "
                         >
                             <Button

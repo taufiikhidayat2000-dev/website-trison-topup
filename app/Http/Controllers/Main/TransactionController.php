@@ -42,14 +42,16 @@ class TransactionController extends Controller
         $settingFavicon = getSetting('favicon') ?: '/favicon.svg';
 
         return inertia()->render('main/TransactionCheck', [
-            'latestOrder' => Order::with('payment', 'product.media', 'brand.media')
+            'latestOrder' => Order::with('payment', 'product.media', 'product.productCategory.media', 'brand.media')
                 ->latest()
                 ->limit(5)
                 ->get()
                 ->map(function ($order) {
                     // Map product image
                     if ($order->product) {
-                        $order->product->image = $order->product->getFirstMediaUrl('image') ?: $order->brand?->getFirstMediaUrl('default_product_image');
+                        $order->product->image = $order->product->getFirstMediaUrl('image')
+                            ?: $order->product->productCategory?->getFirstMediaUrl('image')
+                            ?: $order->brand?->getFirstMediaUrl('default_product_image');
                         $order->product->makeHidden('media');
                     }
 
@@ -82,11 +84,13 @@ class TransactionController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('payment.media', 'product.media', 'brand.media', 'product.brand.category', 'media');
+        $order->load('payment.media', 'product.media', 'product.productCategory.media', 'brand.media', 'product.brand.category', 'media', 'review');
 
         // Map product image
         if ($order->product) {
-            $order->product->image = $order->product->getFirstMediaUrl('image') ?: $order->brand?->getFirstMediaUrl('default_product_image');
+            $order->product->image = $order->product->getFirstMediaUrl('image')
+                ?: $order->product->productCategory?->getFirstMediaUrl('image')
+                ?: $order->brand?->getFirstMediaUrl('default_product_image');
             $order->product->makeHidden('media');
         }
 
@@ -97,7 +101,7 @@ class TransactionController extends Controller
         }
 
         // Payment proof image for manual payment
-        if ($order->payment->driver === 'manual') {
+        if ($order->payment?->driver === 'manual') {
             $order->payment->image = $order->payment?->getFirstMediaUrl('image');
             $order->payment->makeHidden('media');
         }
@@ -130,11 +134,14 @@ class TransactionController extends Controller
                 ->first();
         }
 
+        $isEligibleForReview = $order->isEligibleForReview();
+
         $order = $this->maskData($order);
 
         return inertia('main/TransactionShow', [
             'order' => $order,
             'mlAccountNickname' => $mlAccount->username ?? null,
+            'isEligibleForReview' => $isEligibleForReview,
         ]);
     }
 

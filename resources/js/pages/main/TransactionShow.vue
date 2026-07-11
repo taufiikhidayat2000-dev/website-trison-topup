@@ -4,12 +4,14 @@ import MainHeader from '@/components/MainHeader.vue';
 import DeliveryProgressCard from '@/components/transaction/DeliveryProgressCard.vue';
 import OrderDetails from '@/components/transaction/OrderDetails.vue';
 import PaymentInstructions from '@/components/transaction/PaymentInstructions.vue';
+import ReviewSection from '@/components/transaction/ReviewSection.vue';
 import { OrderDataItem } from '@/types/cms/main';
 import { Head } from '@inertiajs/vue3';
 
 defineProps<{
     order: OrderDataItem;
     mlAccountNickname?: string;
+    isEligibleForReview?: boolean;
 }>();
 </script>
 
@@ -67,6 +69,14 @@ defineProps<{
                 >
                     <DeliveryProgressCard :order="order" />
                 </div>
+
+                <!-- Review Section -->
+                <ReviewSection
+                    v-if="isEligibleForReview || order.review"
+                    :order-reference="order.reference"
+                    :is-eligible-for-review="isEligibleForReview ?? false"
+                    :review="order.review"
+                />
 
                 <!-- Help Section -->
                 <div

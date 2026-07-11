@@ -72,12 +72,12 @@ class MidtransService
         $responseJson = $response->json();
 
         return [
-            'successful' => $response->successful(),
+            'successful' => $response->successful() && isset($responseJson['transaction_id']),
             'transaction_id' => $responseJson['transaction_id'] ?? null,
             'account' => $responseJson['va_numbers'][0]['va_number'] ?? null,
             'code' => $responseJson['biller_code'] ?? null,
             'redirect_url' => $responseJson['redirect_url'] ?? null,
-            'message' => $responseJson['message'] ?? 'Failed to create bank transfer',
+            'message' => $responseJson['status_message'] ?? $responseJson['message'] ?? 'Failed to create bank transfer',
         ];
     }
 
@@ -114,12 +114,12 @@ class MidtransService
         $responseJson = $response->json();
 
         return [
-            'successful' => $response->successful(),
+            'successful' => $response->successful() && isset($responseJson['transaction_id']),
             'transaction_id' => $responseJson['transaction_id'] ?? null,
             'account' => $responseJson['actions'][0]['url'] ?? null,
             'code' => null,
             'redirect_url' => $responseJson['redirect_url'] ?? null,
-            'message' => $responseJson['message'] ?? 'Failed to create qris',
+            'message' => $responseJson['status_message'] ?? $responseJson['message'] ?? 'Failed to create qris',
         ];
     }
 
@@ -162,12 +162,12 @@ class MidtransService
         $responseJson = $response->json();
 
         return [
-            'successful' => $response->successful(),
+            'successful' => $response->successful() && isset($responseJson['transaction_id']),
             'transaction_id' => $responseJson['transaction_id'] ?? null,
             'account' => $cardToken,
             'code' => null,
             'redirect_url' => $responseJson['redirect_url'] ?? null,
-            'message' => $responseJson['message'] ?? 'Failed to create card transaction',
+            'message' => $responseJson['status_message'] ?? $responseJson['message'] ?? 'Failed to create card transaction',
         ];
     }
 

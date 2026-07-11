@@ -1,6 +1,7 @@
 import { PPOBBrandDataItem } from '@/types/cms/ppob';
 import { UserDataItem } from './management';
 import { PPOBProductDataItem } from './ppob.d';
+import { ReviewDataItem } from './review';
 
 export interface PaymentDataItem {
     driver: string;
@@ -51,11 +52,13 @@ export interface OrderDataItem {
     submited: any;
     created_at: string;
     updated_at: string;
+    order_type?: 'topup' | 'gift' | 'manual' | 'unknown';
     user?: UserDataItem;
     product?: PPOBProductDataItem;
     brand?: PPOBBrandDataItem;
     payment?: PaymentDataItem;
     notifications?: OrderNotificationDataItem[];
+    review?: ReviewDataItem | null;
     voucher_use?: {
         id: number;
         voucher_id: number;

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Order\Order;
 use App\Models\User;
 use App\Models\Voucher\Voucher;
+use App\Models\Wallet\Deposit;
 use App\Models\Web\Faq;
 use App\Models\Web\Slider;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -46,6 +47,8 @@ class PermissionSeeder extends Seeder
         'show'.User::class,
         'create'.User::class,
         'update'.User::class,
+        'view'.Deposit::class,
+        'show'.Deposit::class,
         'view'.Order::class,
         'show'.Order::class,
         'create'.Order::class,

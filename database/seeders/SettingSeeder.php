@@ -81,9 +81,13 @@ Jika Anda memiliki pertanyaan lebih lanjut, silakan hubungi kami di {cs_link}. K
                     'maintenance_title' => 'Sistem Sedang Maintenance',
                     'maintenance_description' => '<p>Mohon maaf, saat ini sistem sedang dalam perbaikan rutin. Silakan kembali lagi nanti.</p>',
                     'maintenance_image' => '',
+                    // Primary automatic payment gateway. The other one is used
+                    // automatically as a fallback if this one fails.
+                    'payment_gateway' => 'linkqu', // linkqu/midtrans
                     'providers' => [
                         'digiflazz' => true,
                         'gift' => true,
+                        'lapakgaming' => false,
                     ],
                 ],
             ]);

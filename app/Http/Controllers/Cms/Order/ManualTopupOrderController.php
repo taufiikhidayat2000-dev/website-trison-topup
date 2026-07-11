@@ -84,10 +84,10 @@ class ManualTopupOrderController extends Controller
 
         // Load media
         $model->map(function ($item) {
-            if ($item->payment->driver === 'manual') {
+            if ($item->payment?->driver === 'manual') {
                 $item->payment->image = $item->payment?->getFirstMediaUrl('image');
             }
-            $item->payment->makeHidden('media');
+            $item->payment?->makeHidden('media');
 
             return $item;
         });

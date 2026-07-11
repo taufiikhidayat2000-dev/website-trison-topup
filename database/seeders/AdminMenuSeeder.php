@@ -26,6 +26,7 @@ class AdminMenuSeeder extends Seeder
         $this->dashboardMenu();
         $this->orderMenu();
         $this->webMenu();
+        $this->memberMenu();
     }
 
     public function dashboardMenu()
@@ -43,6 +44,15 @@ class AdminMenuSeeder extends Seeder
 
     public function orderMenu()
     {
+        Menu::create([
+            'role_id' => $this->role->id,
+            'name' => 'All Orders',
+            'url' => '/cms/order/all-orders',
+            'icon' => 'ListOrdered',
+            'order' => 4,
+            'active_pattern' => '/cms/order/all-orders',
+            'status' => 1,
+        ]);
         Menu::create([
             'role_id' => $this->role->id,
             'name' => 'Topup Orders',
@@ -105,6 +115,35 @@ class AdminMenuSeeder extends Seeder
             'url' => '/cms/web/vouchers',
             'order' => 3,
             'active_pattern' => '/cms/web/vouchers',
+            'status' => 1,
+        ]);
+    }
+
+    public function memberMenu()
+    {
+        $member = Menu::create([
+            'role_id' => $this->role->id,
+            'name' => 'Members',
+            'url' => '#',
+            'icon' => 'Users',
+            'order' => 35,
+            'active_pattern' => '/cms/members',
+            'status' => 1,
+        ]);
+        $member->subMenu()->create([
+            'role_id' => $this->role->id,
+            'name' => 'List Member',
+            'url' => '/cms/members',
+            'order' => 1,
+            'active_pattern' => '/cms/members',
+            'status' => 1,
+        ]);
+        $member->subMenu()->create([
+            'role_id' => $this->role->id,
+            'name' => 'Deposits',
+            'url' => '/cms/deposits',
+            'order' => 2,
+            'active_pattern' => '/cms/deposits',
             'status' => 1,
         ]);
     }

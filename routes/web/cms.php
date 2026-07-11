@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Cms\DashboardController;
+use App\Http\Controllers\Cms\HomeRedirectController;
 use Illuminate\Support\Facades\Route;
 use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 
@@ -10,7 +11,7 @@ Route::group([
     'middleware' => ['auth', 'verified'],
 ], function () {
     // Auto redirect to dashboard
-    Route::get('/', fn () => to_route('cms.dashboard'))->name('home');
+    Route::get('/', HomeRedirectController::class)->name('home');
 
     // Dashboard Route
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -26,6 +27,15 @@ Route::group([
 
     // Setting Routes
     require 'cms/setting.php';
+
+    // Reports Routes
+    require 'cms/reports.php';
+
+    // Member Routes
+    require 'cms/member.php';
+
+    // Deposit Routes
+    require 'cms/deposit.php';
 
     // Management Routes
     require 'cms/management.php';

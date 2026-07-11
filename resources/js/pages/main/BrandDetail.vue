@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { show } from '@/actions/App/Http/Controllers/Main/BrandController';
 import { store } from '@/actions/App/Http/Controllers/Main/TransactionController';
 import AccountDataForm from '@/components/brand-detail/AccountDataForm.vue';
 import BrandBanner from '@/components/brand-detail/BrandBanner.vue';
@@ -9,14 +8,16 @@ import PaymentMethodSelection from '@/components/brand-detail/PaymentMethodSelec
 import ProductSelection from '@/components/brand-detail/ProductSelection.vue';
 import MainFooter from '@/components/MainFooter.vue';
 import MainHeader from '@/components/MainHeader.vue';
-import Maintenance from '@/pages/main/Maintenance.vue';
+import CustomerReviewsSection from '@/components/review/CustomerReviewsSection.vue';
 import {
     Collapsible,
     CollapsibleContent,
     CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { useSwal } from '@/composables/useSwal';
+import Maintenance from '@/pages/main/Maintenance.vue';
 import { PPOBBrandDataItem, PPOBProductDataItem } from '@/types/cms/ppob';
+import { ReviewDataItem } from '@/types/cms/review';
 import { FaqDataItem } from '@/types/cms/web';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { useDebounceFn } from '@vueuse/core';
@@ -27,6 +28,8 @@ import { computed, ref, watch } from 'vue';
 const props = defineProps<{
     brand: PPOBBrandDataItem;
     faqs: FaqDataItem[];
+    reviewStats: { average: number; total: number };
+    reviews: ReviewDataItem[];
 }>();
 const page = usePage();
 const user = page.props.auth.user;
@@ -43,7 +46,7 @@ const form = useForm({
     email: user?.email || '',
     name: user?.name || '',
     phone: user?.phone || '',
-    payment_type: 'manual' as 'manual' | 'automatic',
+    payment_type: 'manual' as 'manual' | 'automatic' | 'balance',
     payment_method: null as string | null,
 });
 
@@ -197,8 +200,8 @@ const totalAmount = computed(() => {
     const basePrice = selectedProductData.value.sell_price;
     const priceAfterDiscount = Math.max(0, basePrice - discountAmount.value);
 
-    // Manual payment has no fee
-    if (form.payment_type === 'manual') {
+    // Manual and balance payments have no fee
+    if (form.payment_type === 'manual' || form.payment_type === 'balance') {
         return priceAfterDiscount;
     }
 
@@ -219,6 +222,15 @@ const totalAmount = computed(() => {
 });
 
 const { toast } = useSwal();
+
+const isLoggedIn = computed(() => !!user);
+const userBalance = computed(() => user?.balance ?? 0);
+const hasSufficientBalance = computed(
+    () => userBalance.value >= totalAmount.value,
+);
+const checkoutDisabled = computed(
+    () => form.payment_type === 'balance' && !hasSufficientBalance.value,
+);
 
 const handleVoucherApplied = (code: string, discount: number) => {
     form.voucher_code = code;
@@ -268,6 +280,14 @@ const handleCheckout = () => {
         toast.fire({
             icon: 'error',
             title: 'Mohon pilih metode pembayaran',
+        });
+        return;
+    }
+
+    if (form.payment_type === 'balance' && !hasSufficientBalance.value) {
+        toast.fire({
+            icon: 'error',
+            title: 'Saldo tidak mencukupi',
         });
         return;
     }
@@ -341,7 +361,7 @@ const handleCheckout = () => {
             <Maintenance />
         </template>
         <!-- Main Content -->
-        <main class="flex-1 w-full" v-else>
+        <main class="w-full flex-1" v-else>
             <!-- Banner Section -->
             <BrandBanner :brand="brand" />
 
@@ -384,6 +404,9 @@ const handleCheckout = () => {
                             v-model:selected-payment="form.payment_method"
                             :manual-bank="manualBank"
                             :payment-methods="paymentMethods"
+                            :is-logged-in="isLoggedIn"
+                            :user-balance="userBalance"
+                            :total-amount="totalAmount"
                         />
 
                         <!-- Brand Description -->
@@ -414,12 +437,22 @@ const handleCheckout = () => {
                             :manual-bank="manualBank"
                             :payment-methods="paymentMethods"
                             :is-loading="form.processing"
+                            :checkout-disabled="checkoutDisabled"
                             @checkout="handleCheckout"
                             @voucher-applied="handleVoucherApplied"
                             @voucher-removed="handleVoucherRemoved"
                         />
                     </div>
                 </div>
+            </div>
+
+            <!-- Customer Reviews Section -->
+            <div class="mx-auto max-w-7xl px-4">
+                <CustomerReviewsSection
+                    :average="reviewStats.average"
+                    :total="reviewStats.total"
+                    :reviews="reviews"
+                />
             </div>
 
             <!-- FAQ Section -->

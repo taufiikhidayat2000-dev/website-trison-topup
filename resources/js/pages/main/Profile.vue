@@ -6,9 +6,11 @@ import PasswordTab from '@/components/profile/PasswordTab.vue';
 import ProfileTab from '@/components/profile/ProfileTab.vue';
 import TransactionTab from '@/components/profile/TransactionTab.vue';
 import { PaginationItem } from '@/types';
+import { DepositDataItem } from '@/types/cms/deposit';
 import { OrderDataItem } from '@/types/cms/main';
+import { BalanceMutationDataItem } from '@/types/cms/member';
 import { Head } from '@inertiajs/vue3';
-import { Lock, Receipt, User } from 'lucide-vue-next';
+import { Lock, Receipt, User, Wallet } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 type Tab = 'profile' | 'password' | 'transactions' | 'deposit';
@@ -18,6 +20,8 @@ defineProps<{
     status?: string;
     transactions: PaginationItem<OrderDataItem>;
     balance: number;
+    mutations: PaginationItem<BalanceMutationDataItem>;
+    deposits: PaginationItem<DepositDataItem>;
 }>();
 
 const activeTab = ref<Tab>('profile');
@@ -83,7 +87,7 @@ const activeTab = ref<Tab>('profile');
                                     Transactions
                                 </button>
 
-                                <!-- <button
+                                <button
                                     class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors"
                                     :class="
                                         activeTab === 'deposit'
@@ -94,7 +98,7 @@ const activeTab = ref<Tab>('profile');
                                 >
                                     <Wallet class="h-5 w-5" />
                                     Deposit
-                                </button> -->
+                                </button>
                             </nav>
                         </div>
                     </div>
@@ -117,6 +121,8 @@ const activeTab = ref<Tab>('profile');
                         <DepositTab
                             v-if="activeTab === 'deposit'"
                             :balance="balance"
+                            :mutations="mutations"
+                            :deposits="deposits"
                         />
                     </div>
                 </div>

@@ -176,8 +176,12 @@ const handleSearch = () => {
                                     <td class="px-4 py-3">
                                         <div
                                             v-if="
-                                                order.product?.provider ===
-                                                'digiflazz'
+                                                [
+                                                    'digiflazz',
+                                                    'lapakgaming',
+                                                ].includes(
+                                                    order.product?.provider,
+                                                )
                                             "
                                         >
                                             <StatusBadge

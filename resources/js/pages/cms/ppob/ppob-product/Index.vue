@@ -3,6 +3,7 @@ import {
     create,
     destroy,
     edit,
+    importForm,
 } from '@/actions/App/Http/Controllers/Cms/PPOB/PPOBProductController';
 import Heading from '@/components/Heading.vue';
 import ResourceTable from '@/components/ResourceTable.vue';
@@ -24,19 +25,22 @@ import { PaginationItem, type BreadcrumbItem } from '@/types';
 import {
     PPOBBrandDataItem,
     PPOBCategoryDataItem,
+    PPOBProductCategoryDataItem,
     PPOBProductDataItem,
 } from '@/types/cms/ppob';
 import { Head, router } from '@inertiajs/vue3';
 import { ModalLink } from '@inertiaui/modal-vue';
 import dayjs from 'dayjs';
-import { Image, Pencil, Plus, Trash2 } from 'lucide-vue-next';
+import { FileSpreadsheet, Image, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
 const props = defineProps<{
     categories: PPOBCategoryDataItem[];
     brands: PPOBBrandDataItem[];
+    productCategories: PPOBProductCategoryDataItem[];
     filter_category_id?: number | null;
     filter_brand_id?: number | null;
+    filter_product_category_id?: number | null;
     data: PaginationItem<PPOBProductDataItem>;
     orderBy?: string;
     order?: 'asc' | 'desc';
@@ -55,6 +59,7 @@ const description =
 const columns = [
     { label: 'Category', key: 'category', sortable: false },
     { label: 'Brand', key: 'brand', sortable: false },
+    { label: 'Product Category', key: 'product_category', sortable: false },
     { label: 'Name', key: 'name', sortable: true },
     { label: 'Sku', key: 'sku', sortable: true },
     { label: 'Buy Price', key: 'buy_price', sortable: true },
@@ -85,6 +90,9 @@ const breadcrumbItems: BreadcrumbItem[] = [
 // Filter State
 const filter_category_id = ref<number | null>(props.filter_category_id || null);
 const filter_brand_id = ref<number | null>(props.filter_brand_id || null);
+const filter_product_category_id = ref<number | null>(
+    props.filter_product_category_id || null,
+);
 
 const { updateParams } = useFilter();
 
@@ -119,6 +127,13 @@ watch(filter_brand_id, (newValue) => {
 
     updateParams(params);
 });
+
+watch(filter_product_category_id, (newValue) => {
+    updateParams({
+        filter_product_category_id: newValue !== null ? newValue : null,
+        page: 1, // Reset to page 1 when filter changes
+    });
+});
 </script>
 
 <template>
@@ -128,6 +143,16 @@ watch(filter_brand_id, (newValue) => {
             <div class="flex flex-wrap items-center justify-between">
                 <Heading :title="title" :description="description" />
                 <div class="flex items-center gap-2">
+                    <ModalLink
+                        :href="importForm().url"
+                        slideover
+                        v-if="hasPermission('import' + resource)"
+                    >
+                        <Button variant="outline">
+                            <FileSpreadsheet class="h-4 w-4" />
+                            Import Excel
+                        </Button>
+                    </ModalLink>
                     <ModalLink
                         :href="create().url"
                         slideover
@@ -187,6 +212,34 @@ watch(filter_brand_id, (newValue) => {
                         </SelectContent>
                     </Select>
                 </div>
+                <div class="flex flex-col">
+                    <Label for="status" class="mb-3">
+                        Product Category Filter
+                    </Label>
+                    <Select
+                        name="filter_product_category_id"
+                        v-model="filter_product_category_id"
+                    >
+                        <SelectTrigger
+                            id="filter_product_category_id"
+                            class="mt-1 w-full"
+                        >
+                            <SelectValue placeholder="Select a Product Category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem :value="null">
+                                -- All Product Categories --
+                            </SelectItem>
+                            <SelectItem
+                                v-for="productCategory in productCategories"
+                                :key="productCategory.id"
+                                :value="productCategory.id"
+                            >
+                                {{ productCategory.name }}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
             <ResourceTable
                 :data="data"
@@ -201,6 +254,9 @@ watch(filter_brand_id, (newValue) => {
                 </template>
                 <template #brand="{ row }">
                     {{ row.brand?.name }}
+                </template>
+                <template #product_category="{ row }">
+                    {{ row.product_category?.name ?? '-' }}
                 </template>
                 <template #buy_price="{ row }">
                     {{ formatCurrency(row.buy_price) }}

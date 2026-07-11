@@ -8,7 +8,6 @@ import axios from 'axios';
 import { BadgeCheck, Loader2, TicketPercent } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import ContactCS from './ContactCS.vue';
-import ReviewRating from './ReviewRating.vue';
 
 interface ManualBank {
     id?: string;
@@ -30,11 +29,12 @@ const props = defineProps<{
     brandName: string;
     selectedProduct: PPOBProductDataItem | null;
     selectedPayment: string | null;
-    paymentType: 'manual' | 'automatic';
+    paymentType: 'manual' | 'automatic' | 'balance';
     totalAmount: number;
     manualBank: ManualBank;
     paymentMethods: PaymentMethod[];
     isLoading?: boolean;
+    checkoutDisabled?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -97,7 +97,9 @@ const removeVoucher = () => {
 const getPaymentName = () => {
     if (!props.selectedPayment) return null;
 
-    if (props.paymentType === 'manual') {
+    if (props.paymentType === 'balance') {
+        return 'Saldo';
+    } else if (props.paymentType === 'manual') {
         return props.manualBank.name;
     } else {
         return props.paymentMethods.find((p) => p.id === props.selectedPayment)
@@ -121,8 +123,6 @@ watch(
 
 <template>
     <div class="sticky top-4">
-        <ReviewRating :rating="4.99" :totalReviews="10521" />
-
         <ContactCS />
 
         <!-- Voucher Section -->
@@ -253,7 +253,7 @@ watch(
             <Button
                 class="mt-6 w-full"
                 @click="emit('checkout')"
-                :disabled="isLoading"
+                :disabled="isLoading || checkoutDisabled"
             >
                 <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
                 <BadgeCheck v-else class="mr-2 h-4 w-4" />

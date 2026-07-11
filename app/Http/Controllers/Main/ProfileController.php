@@ -39,6 +39,8 @@ class ProfileController extends Controller
                 s: $search,
             ),
             'balance' => $user->balance ?? 0,
+            'mutations' => $user->balanceMutations()->latest()->paginate(10, ['*'], 'mutations_page')->withQueryString(),
+            'deposits' => $user->deposits()->latest()->paginate(10, ['*'], 'deposits_page')->withQueryString(),
         ]);
     }
 
