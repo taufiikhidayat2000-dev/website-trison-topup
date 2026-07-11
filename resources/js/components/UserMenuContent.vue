@@ -6,6 +6,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { useSwal } from '@/composables/useSwal';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 import type { User } from '@/types';
@@ -16,8 +17,21 @@ interface Props {
     user: User;
 }
 
-const handleLogout = () => {
-    router.flushAll();
+const { confirm } = useSwal();
+
+const handleLogout = async () => {
+    const result = await confirm({
+        title: 'Apakah Anda yakin ingin keluar?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, keluar',
+        cancelButtonText: 'Batal',
+    });
+
+    if (result.isConfirmed) {
+        router.flushAll();
+        router.post(logout().url);
+    }
 };
 
 defineProps<Props>();
@@ -40,15 +54,14 @@ defineProps<Props>();
     </DropdownMenuGroup>
     <DropdownMenuSeparator />
     <DropdownMenuItem :as-child="true">
-        <Link
+        <button
+            type="button"
             class="block w-full"
-            :href="logout()"
             @click="handleLogout"
-            as="button"
             data-test="logout-button"
         >
             <LogOut class="mr-2 h-4 w-4" />
             Log out
-        </Link>
+        </button>
     </DropdownMenuItem>
 </template>

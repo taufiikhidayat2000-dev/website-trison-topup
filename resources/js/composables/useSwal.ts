@@ -10,6 +10,10 @@ export function useSwal() {
             confirmButtonText: 'Yes',
             reverseButtons: true,
             customClass: {
+                popup: 'bg-card text-card-foreground border border-border rounded-lg shadow-lg',
+                title: 'text-foreground',
+                htmlContainer: 'text-muted-foreground',
+                icon: 'border-current',
                 confirmButton:
                     'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 px-4 py-2 ml-2',
                 cancelButton:
@@ -21,6 +25,10 @@ export function useSwal() {
         return Swal.fire({
             ...defaultOptions,
             ...options,
+            customClass: {
+                ...defaultOptions.customClass,
+                ...(options.customClass as Record<string, string> | undefined),
+            },
         } as SweetAlertOptions);
     };
 
@@ -30,6 +38,11 @@ export function useSwal() {
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
+        customClass: {
+            popup: 'bg-card text-card-foreground border border-border shadow-lg',
+            title: 'text-foreground',
+            htmlContainer: 'text-muted-foreground',
+        },
         didOpen: (toast) => {
             toast.onmouseenter = Swal.stopTimer;
             toast.onmouseleave = Swal.resumeTimer;
