@@ -1,0 +1,198 @@
+/*
+ * SweetAlert2 theme for Trison Topup — dark navy / blue-cyan glassmorphism.
+ * Targets SweetAlert2's own DOM classes directly so every confirm/alert/toast
+ * fired through `useSwal()` picks this up automatically, with no per-call-site
+ * changes required.
+ */
+
+/* Backdrop overlay */
+.swal2-container {
+    background: rgba(0, 0, 0, 0.72) !important;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+/* Popup shell */
+.swal2-popup.swal2-popup {
+    background: rgba(17, 24, 39, 0.98) !important;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    border-radius: 18px !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow:
+        0 0 30px rgba(59, 130, 246, 0.15),
+        0 20px 60px rgba(0, 0, 0, 0.5);
+    padding: 2rem 1.5rem;
+    max-width: 480px;
+    width: calc(100% - 2rem);
+}
+
+.swal2-title {
+    color: #ffffff !important;
+    font-weight: 600;
+    padding: 0 0 0.25rem;
+}
+
+.swal2-html-container {
+    color: #94a3b8 !important;
+}
+
+.swal2-actions {
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+/* Buttons */
+.swal2-confirm.swal2-confirm {
+    background: linear-gradient(90deg, #2563eb, #06b6d4) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 18px rgba(37, 99, 235, 0.35);
+    padding: 0.625rem 1.5rem !important;
+    font-weight: 500;
+    transition:
+        filter 250ms ease,
+        transform 250ms ease;
+}
+.swal2-confirm.swal2-confirm:hover {
+    filter: brightness(1.08);
+}
+.swal2-confirm.swal2-confirm:focus-visible {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4) !important;
+}
+
+.swal2-cancel.swal2-cancel {
+    background: transparent !important;
+    border: 1px solid #475569 !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    padding: 0.625rem 1.5rem !important;
+    transition: background-color 250ms ease;
+}
+.swal2-cancel.swal2-cancel:hover {
+    background: #334155 !important;
+}
+
+/* Destructive confirm variant, applied via customClass on delete/reject-style actions */
+.swal2-confirm.swal2-confirm.swal-btn-danger {
+    background: linear-gradient(90deg, #dc2626, #ef4444) !important;
+    box-shadow: 0 0 18px rgba(220, 38, 38, 0.35);
+}
+
+/* Positive confirm variant, applied via customClass for approve/restore-style actions */
+.swal2-confirm.swal2-confirm.swal-btn-success {
+    background: linear-gradient(90deg, #16a34a, #22c55e) !important;
+    box-shadow: 0 0 18px rgba(22, 163, 74, 0.35);
+}
+
+/* Icons */
+.swal2-icon.swal2-success {
+    color: #22c55e !important;
+    border-color: #22c55e !important;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.35);
+}
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: #22c55e !important;
+}
+.swal2-icon.swal2-success .swal2-success-ring {
+    border-color: rgba(34, 197, 94, 0.35) !important;
+}
+
+.swal2-icon.swal2-error {
+    color: #ef4444 !important;
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.35);
+}
+.swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+    background-color: #ef4444 !important;
+}
+
+.swal2-icon.swal2-warning {
+    color: #f59e0b !important;
+    border-color: #f59e0b !important;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+}
+
+.swal2-icon.swal2-question {
+    color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.35);
+}
+
+.swal2-icon.swal2-info {
+    color: #06b6d4 !important;
+    border-color: #06b6d4 !important;
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);
+}
+
+/* Loading spinner (Swal.showLoading) */
+.swal2-loader {
+    border-color: #2563eb transparent #06b6d4 transparent !important;
+}
+
+/* Popup animation: fade + scale, matching the site's premium feel */
+.swal2-popup.swal2-show {
+    animation: swal-pop-in 250ms ease-out;
+}
+.swal2-popup.swal2-hide {
+    animation: swal-pop-out 200ms ease-in;
+}
+@keyframes swal-pop-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+@keyframes swal-pop-out {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* Toast notifications (top-right) */
+.swal2-popup.swal2-toast.swal2-toast {
+    background: #1e293b !important;
+    border: none !important;
+    border-left: 4px solid #3b82f6 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(18px);
+    padding: 0.75rem 1rem;
+}
+.swal2-popup.swal2-toast .swal2-title {
+    color: #ffffff !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.swal2-popup.swal2-toast:has(.swal2-icon.swal2-success) {
+    border-left-color: #22c55e !important;
+}
+.swal2-popup.swal2-toast:has(.swal2-icon.swal2-error) {
+    border-left-color: #ef4444 !important;
+}
+.swal2-popup.swal2-toast:has(.swal2-icon.swal2-warning) {
+    border-left-color: #f59e0b !important;
+}
+.swal2-popup.swal2-toast:has(.swal2-icon.swal2-info),
+.swal2-popup.swal2-toast:has(.swal2-icon.swal2-question) {
+    border-left-color: #06b6d4 !important;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .swal2-popup.swal2-popup {
+        padding: 20px !important;
+        border-radius: 14px !important;
+        width: calc(100% - 2.5rem);
+    }
+}

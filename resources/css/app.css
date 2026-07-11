@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 
 @import 'tw-animate-css';
+@import './sweetalert-theme.css';
 
 @source '../../node_modules/@inertiaui/modal-vue/src/**/*.{js,vue}';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
