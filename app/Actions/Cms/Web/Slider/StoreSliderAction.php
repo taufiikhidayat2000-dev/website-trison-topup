@@ -17,7 +17,7 @@ class StoreSliderAction
     {
         $slider = Slider::create($data);
 
-        if ($data['image'] ?? null instanceof UploadedFile) {
+        if (($data['image'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $slider,
                 file: $data['image'],

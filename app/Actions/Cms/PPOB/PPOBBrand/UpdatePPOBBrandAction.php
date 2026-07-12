@@ -15,7 +15,7 @@ class UpdatePPOBBrandAction
      */
     public function handle(PPOBBrand $brand, array $data): bool
     {
-        if ($data['image'] ?? null instanceof UploadedFile) {
+        if (($data['image'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $brand,
                 file: $data['image'],
@@ -23,7 +23,7 @@ class UpdatePPOBBrandAction
             );
         }
 
-        if ($data['banner'] ?? null instanceof UploadedFile) {
+        if (($data['banner'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $brand,
                 file: $data['banner'],
@@ -31,7 +31,7 @@ class UpdatePPOBBrandAction
             );
         }
 
-        if ($data['default_product_image'] ?? null instanceof UploadedFile) {
+        if (($data['default_product_image'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $brand,
                 file: $data['default_product_image'],

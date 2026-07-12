@@ -15,7 +15,7 @@ class UpdateProgressAction
      */
     public function handle(Order $order, array $data): void
     {
-        if ($data['gift_send_proof'] ?? null instanceof UploadedFile) {
+        if (($data['gift_send_proof'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $order,
                 file: $data['gift_send_proof'],

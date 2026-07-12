@@ -17,7 +17,7 @@ class StorePPOBCategoryAction
     {
         $category = PPOBCategory::create($data);
 
-        if ($data['image'] ?? null instanceof UploadedFile) {
+        if (($data['image'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $category,
                 file: $data['image'],

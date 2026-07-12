@@ -18,7 +18,7 @@ class UpdatePPOBProductAction
         $data['buy_price'] = currencyToNumber($data['buy_price']);
         $data['sell_price'] = currencyToNumber($data['sell_price']);
 
-        if ($data['image'] ?? null instanceof UploadedFile) {
+        if (($data['image'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $product,
                 file: $data['image'],

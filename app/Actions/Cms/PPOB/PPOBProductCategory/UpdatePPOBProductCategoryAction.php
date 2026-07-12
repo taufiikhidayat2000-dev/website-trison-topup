@@ -15,7 +15,7 @@ class UpdatePPOBProductCategoryAction
      */
     public function handle(PPOBProductCategory $productCategory, array $data): bool
     {
-        if ($data['image'] ?? null instanceof UploadedFile) {
+        if (($data['image'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $productCategory,
                 file: $data['image'],

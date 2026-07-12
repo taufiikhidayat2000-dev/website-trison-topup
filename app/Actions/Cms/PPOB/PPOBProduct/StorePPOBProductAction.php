@@ -20,7 +20,7 @@ class StorePPOBProductAction
 
         $product = PPOBProduct::create($data);
 
-        if ($data['image'] ?? null instanceof UploadedFile) {
+        if (($data['image'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $product,
                 file: $data['image'],

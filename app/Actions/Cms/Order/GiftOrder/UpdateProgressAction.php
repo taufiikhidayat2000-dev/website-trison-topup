@@ -16,7 +16,7 @@ class UpdateProgressAction
     public function handle(Order $order, array $data): void
     {
         // Upload file
-        if ($data['admin_add_friend_proof'] ?? null instanceof UploadedFile) {
+        if (($data['admin_add_friend_proof'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $order,
                 file: $data['admin_add_friend_proof'],
@@ -24,7 +24,7 @@ class UpdateProgressAction
             );
         }
 
-        if ($data['user_confirm_friend_proof'] ?? null instanceof UploadedFile) {
+        if (($data['user_confirm_friend_proof'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $order,
                 file: $data['user_confirm_friend_proof'],
@@ -32,7 +32,7 @@ class UpdateProgressAction
             );
         }
 
-        if ($data['gift_send_proof'] ?? null instanceof UploadedFile) {
+        if (($data['gift_send_proof'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $order,
                 file: $data['gift_send_proof'],

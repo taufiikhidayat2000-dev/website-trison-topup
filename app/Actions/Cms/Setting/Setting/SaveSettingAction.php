@@ -21,7 +21,7 @@ class SaveSettingAction
 
         $setting = Setting::first();
 
-        if ($data['value']['manual_transfer_bank_logo'] ?? null instanceof UploadedFile) {
+        if (($data['value']['manual_transfer_bank_logo'] ?? null) instanceof UploadedFile) {
             $file = $this->saveFile(
                 file: $data['value']['manual_transfer_bank_logo'],
                 base_file_name: 'transfer_bank_logo_'.time(),
@@ -29,7 +29,7 @@ class SaveSettingAction
             $data['value']['manual_transfer_bank_logo'] = '/storage/'.$file;
         }
 
-        if ($data['value']['logo'] ?? null instanceof UploadedFile) {
+        if (($data['value']['logo'] ?? null) instanceof UploadedFile) {
             $file = $this->saveFile(
                 file: $data['value']['logo'],
                 base_file_name: 'logo_'.time(),
@@ -37,7 +37,7 @@ class SaveSettingAction
             $data['value']['logo'] = '/storage/'.$file;
         }
 
-        if ($data['value']['icon'] ?? null instanceof UploadedFile) {
+        if (($data['value']['icon'] ?? null) instanceof UploadedFile) {
             $file = $this->saveFile(
                 file: $data['value']['icon'],
                 base_file_name: 'icon_'.time(),
@@ -45,7 +45,7 @@ class SaveSettingAction
             $data['value']['icon'] = '/storage/'.$file;
         }
 
-        if ($data['value']['favicon'] ?? null instanceof UploadedFile) {
+        if (($data['value']['favicon'] ?? null) instanceof UploadedFile) {
             $file = $this->saveFile(
                 file: $data['value']['favicon'],
                 base_file_name: 'favicon_'.time(),
@@ -53,7 +53,7 @@ class SaveSettingAction
             $data['value']['favicon'] = '/storage/'.$file;
         }
 
-        if ($data['value']['maintenance_image'] ?? null instanceof UploadedFile) {
+        if (($data['value']['maintenance_image'] ?? null) instanceof UploadedFile) {
             $file = $this->saveFile(
                 file: $data['value']['maintenance_image'],
                 base_file_name: 'maintenance_image_'.time(),

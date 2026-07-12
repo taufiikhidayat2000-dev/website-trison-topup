@@ -15,7 +15,7 @@ class UpdateSliderAction
      */
     public function handle(Slider $slider, array $data): bool
     {
-        if ($data['image'] ?? null instanceof UploadedFile) {
+        if (($data['image'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $slider,
                 file: $data['image'],

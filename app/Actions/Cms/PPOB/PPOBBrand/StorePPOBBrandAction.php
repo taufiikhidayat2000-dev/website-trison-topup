@@ -17,7 +17,7 @@ class StorePPOBBrandAction
     {
         $brand = PPOBBrand::create($data);
 
-        if ($data['image'] ?? null instanceof UploadedFile) {
+        if (($data['image'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $brand,
                 file: $data['image'],
@@ -25,7 +25,7 @@ class StorePPOBBrandAction
             );
         }
 
-        if ($data['banner'] ?? null instanceof UploadedFile) {
+        if (($data['banner'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $brand,
                 file: $data['banner'],
@@ -33,7 +33,7 @@ class StorePPOBBrandAction
             );
         }
 
-        if ($data['default_product_image'] ?? null instanceof UploadedFile) {
+        if (($data['default_product_image'] ?? null) instanceof UploadedFile) {
             $this->saveMedia(
                 model: $brand,
                 file: $data['default_product_image'],
