@@ -59,6 +59,8 @@ class ImportLapakGamingController extends Controller
     {
         Gate::authorize('create'.$this->resource);
 
+        abort_unless($this->lapakGamingService->isEnabled(), 422, 'LapakGaming belum aktif.');
+
         $action->handle();
 
         return back();

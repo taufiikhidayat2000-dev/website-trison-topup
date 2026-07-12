@@ -26,6 +26,7 @@ class SubmitReviewAction
             'product_name' => $order->product?->name ?? '-',
             'rating' => $data['rating'],
             'review' => $data['review'],
+            'status' => 'pending',
         ]);
     }
 }
