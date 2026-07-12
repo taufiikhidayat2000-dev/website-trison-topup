@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
+import { waLink } from '@/lib/utils';
+import { usePage } from '@inertiajs/vue3';
 import { Headphones } from 'lucide-vue-next';
+
+const page = usePage();
 </script>
 
 <template>
@@ -20,7 +24,7 @@ import { Headphones } from 'lucide-vue-next';
                 </p>
                 <Button variant="outline" size="sm" class="w-full" as-child>
                     <a
-                        href="https://wa.me/6281234567890"
+                        :href="waLink(page.props.setting.cs) || '#'"
                         target="_blank"
                         rel="noopener noreferrer"
                     >

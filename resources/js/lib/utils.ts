@@ -36,3 +36,16 @@ export function formatCurrency(amount: any) {
         maximumFractionDigits: 0,
     }).format(amount);
 }
+
+export function waLink(phone?: string, message?: string) {
+    const digits = (phone ?? '').replace(/\D/g, '');
+    const normalized = digits.startsWith('0') ? `62${digits.slice(1)}` : digits;
+
+    if (!normalized) {
+        return undefined;
+    }
+
+    const query = message ? `?text=${encodeURIComponent(message)}` : '';
+
+    return `https://wa.me/${normalized}${query}`;
+}

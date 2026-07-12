@@ -5,14 +5,17 @@ import DeliveryProgressCard from '@/components/transaction/DeliveryProgressCard.
 import OrderDetails from '@/components/transaction/OrderDetails.vue';
 import PaymentInstructions from '@/components/transaction/PaymentInstructions.vue';
 import ReviewSection from '@/components/transaction/ReviewSection.vue';
+import { waLink } from '@/lib/utils';
 import { OrderDataItem } from '@/types/cms/main';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 
 defineProps<{
     order: OrderDataItem;
     mlAccountNickname?: string;
     isEligibleForReview?: boolean;
 }>();
+
+const page = usePage();
 </script>
 
 <template>
@@ -85,7 +88,7 @@ defineProps<{
                     <p class="text-sm text-muted-foreground">
                         💬 Butuh bantuan? Hubungi CS kami di
                         <a
-                            href="https://wa.me/6281234567890"
+                            :href="waLink(page.props.setting.cs) || '#'"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="font-medium text-primary hover:underline"
