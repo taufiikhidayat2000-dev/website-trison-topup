@@ -231,7 +231,7 @@ const paymentMethods = [
         name: 'Virtual Account Muamalat',
         fee: 4000, // Flat 4000 IDR
         action: 'add' as const,
-        img: '/images/MUAMALAT.svg',
+        img: '/images/MUAMALAT.png',
     },
     {
         id: 'ovo',
