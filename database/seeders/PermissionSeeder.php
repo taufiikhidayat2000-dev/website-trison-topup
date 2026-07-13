@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Order\Order;
+use App\Models\Review\Review;
 use App\Models\User;
 use App\Models\Voucher\Voucher;
 use App\Models\Wallet\Deposit;
@@ -71,6 +72,10 @@ class PermissionSeeder extends Seeder
         'create'.Voucher::class,
         'update'.Voucher::class,
         'delete'.Voucher::class,
+        'view'.Review::class,
+        'show'.Review::class,
+        'update'.Review::class,
+        'delete'.Review::class,
     ];
 
     // List user permissions
