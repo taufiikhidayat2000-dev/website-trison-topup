@@ -13,4 +13,4 @@ Artisan::command('inspire', function () {
 
 Schedule::job(new ExpirePayments)->hourly();
 Schedule::job(new ExpireDeposits)->hourly();
-Schedule::job(new ReconcileLinkQuPayments)->everyFiveMinutes();
+Schedule::job(new ReconcileLinkQuPayments)->everyMinute();
