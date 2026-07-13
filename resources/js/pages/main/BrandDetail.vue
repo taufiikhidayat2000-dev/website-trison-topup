@@ -504,7 +504,7 @@ const handleCheckout = () => {
                                 Deskripsi
                             </h2>
                             <div
-                                v-html="brand.description"
+                                v-safe-html="brand.description"
                                 class="text-sm"
                             ></div>
                         </div>
@@ -554,7 +554,7 @@ const handleCheckout = () => {
                         <CollapsibleTrigger
                             class="flex w-full items-center justify-between p-4 font-medium"
                         >
-                            <span v-html="faq.question"></span>
+                            <span v-safe-html="faq.question"></span>
                             <ChevronDown
                                 class="h-4 w-4 transition-transform duration-200"
                                 :class="{ 'rotate-180': open }"
@@ -563,7 +563,7 @@ const handleCheckout = () => {
                         <CollapsibleContent
                             class="p-4 pt-0 text-sm text-muted-foreground"
                         >
-                            <div v-html="faq.answer"></div>
+                            <div v-safe-html="faq.answer"></div>
                         </CollapsibleContent>
                     </Collapsible>
                 </div>

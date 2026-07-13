@@ -38,7 +38,7 @@ const appUrl = page.props.app_url;
 
                 <div
                     class="prose prose-sm prose-headings:text-foreground prose-a:text-primary prose-strong:text-foreground max-w-none text-muted-foreground"
-                    v-html="setting?.privacy_policy"
+                    v-safe-html="setting?.privacy_policy"
                 />
             </div>
         </main>

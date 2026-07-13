@@ -9,6 +9,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp } from 'vue';
 import { initializeTheme } from './composables/useAppearance';
+import { safeHtml } from './directives/safeHtml';
 
 dayjs.locale('id');
 
@@ -25,6 +26,7 @@ createInertiaApp({
         createApp({ render: renderApp(App, props) })
             .use(plugin)
             .use(VueQueryPlugin)
+            .directive('safe-html', safeHtml)
             .mount(el);
     },
     progress: {
