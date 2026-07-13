@@ -36,9 +36,12 @@ class UserController extends Controller
         $search = $request?->search ?? '';
 
         // Query
+        // Backend admin accounts only (superadmin/admin) - regular customers
+        // hold the 'user' role and are managed separately in the Members page.
         $model = User::query()
             ->join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
             ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->whereIn('roles.name', ['superadmin', 'admin'])
             ->select(
                 'users.*',
                 'roles.name as role_name',
@@ -80,7 +83,7 @@ class UserController extends Controller
         Gate::authorize('create'.$this->resource);
 
         return inertia('cms/management/user/Create', [
-            'roles' => Role::all(),
+            'roles' => Role::whereIn('name', ['superadmin', 'admin'])->get(),
         ]);
     }
 
@@ -116,7 +119,7 @@ class UserController extends Controller
 
         return inertia('cms/management/user/Edit', [
             'user' => $user,
-            'roles' => Role::all(),
+            'roles' => Role::whereIn('name', ['superadmin', 'admin'])->get(),
         ]);
     }
 
