@@ -80,12 +80,19 @@ class LinkQuService
      *
      * Formula (per LinkQu signature guide): hash_hmac('sha256', $path.$method.$secondValue, $signatureKey)
      * where $secondValue is the lowercased, alphanumeric-only concatenation of the transaction fields.
+     *
+     * LinkQu computes the signature using the path without the "/linkqu-partner" prefix,
+     * even though the actual request URL includes it. Verified empirically against the
+     * production API: signing with the full request path is rejected ("Signature Not Valid!"),
+     * while stripping the prefix succeeds.
      */
     protected function buildCreateSignature(string $path, string $method, array $fields): string
     {
+        $signaturePath = preg_replace('#^/linkqu-partner#', '', $path);
+
         $second = strtolower(preg_replace('/[^0-9a-zA-Z]/', '', implode('', $fields)));
 
-        return hash_hmac('sha256', $path.$method.$second, $this->signatureKey);
+        return hash_hmac('sha256', $signaturePath.$method.$second, $this->signatureKey);
     }
 
     protected function headers(): array
