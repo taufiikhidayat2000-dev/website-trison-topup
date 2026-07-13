@@ -82,7 +82,7 @@ watch(
             input-id="maintenance_image"
             input-name="value[maintenance_image]"
             label="Maintenance Image"
-            description="Upload maintenance image (PNG, JPG, or SVG max 2MB)"
+            description="Upload maintenance image (PNG, JPG, or SVG max 2MB). Recommended size: max 600x600 px."
             :max-size="2"
             preview-height="150px"
             :initial-preview="setting?.maintenance_image || ''"

@@ -99,12 +99,13 @@ const description = ref<string>(props.productCategory.description || '');
                         Upload a default image for this product category (Max
                         2MB). Every product in this category that doesn't have
                         its own photo will use this image automatically.
+                        Recommended size: 500x500 px (square).
                     </InputDescription>
                     <ImageUploadPreview
                         input-id="image"
                         input-name="image"
                         label=""
-                        description="Upload your product category image here."
+                        description="Upload your product category image here. Recommended size: 500x500 px (square)."
                         accept="image/*"
                         :max-size="2"
                         preview-height="200px"

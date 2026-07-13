@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\FlashSale\FlashSale;
+use App\Models\FlashSale\FlashSaleProduct;
 use App\Models\Order\Order;
 use App\Models\Review\Review;
 use App\Models\User;
@@ -76,6 +78,16 @@ class PermissionSeeder extends Seeder
         'show'.Review::class,
         'update'.Review::class,
         'delete'.Review::class,
+        'view'.FlashSale::class,
+        'show'.FlashSale::class,
+        'create'.FlashSale::class,
+        'update'.FlashSale::class,
+        'delete'.FlashSale::class,
+        'view'.FlashSaleProduct::class,
+        'show'.FlashSaleProduct::class,
+        'create'.FlashSaleProduct::class,
+        'update'.FlashSaleProduct::class,
+        'delete'.FlashSaleProduct::class,
     ];
 
     // List user permissions

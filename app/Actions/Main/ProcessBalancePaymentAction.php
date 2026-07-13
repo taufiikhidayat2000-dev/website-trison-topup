@@ -2,6 +2,7 @@
 
 namespace App\Actions\Main;
 
+use App\Actions\FlashSale\SettleFlashSaleStockAction;
 use App\Enums\DigiflazzStatusEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Mail\PaymentFailed;
@@ -27,6 +28,7 @@ class ProcessBalancePaymentAction
 {
     public function __construct(
         public readonly BalanceService $balanceService,
+        public readonly SettleFlashSaleStockAction $settleFlashSaleStockAction,
     ) {}
 
     public function handle(Order $order, User $user): Payment
@@ -61,6 +63,8 @@ class ProcessBalancePaymentAction
             $order->update([
                 'payment_status' => PaymentStatusEnum::SETTLEMENT,
             ]);
+
+            $this->settleFlashSaleStockAction->handle($order);
 
             $this->dispatchFulfillment($order, $user);
 

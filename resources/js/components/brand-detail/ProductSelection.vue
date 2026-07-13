@@ -88,16 +88,24 @@ const filteredProducts = computed(() => {
             <button
                 v-for="product in filteredProducts"
                 :key="product.id"
-                class="flex h-full flex-col overflow-hidden rounded-xl border-2 text-left transition-all"
+                class="flex h-full flex-col overflow-hidden rounded-xl border-2 bg-secondary text-left shadow-sm transition-all"
                 :class="
                     selectedProduct === product.id
-                        ? 'border-primary bg-primary/5'
+                        ? 'border-primary ring-2 ring-primary/30'
                         : 'border-border/50 hover:border-primary/50'
                 "
                 @click="emit('update:selectedProduct', product.id)"
             >
-                <div class="pt-4 pl-4 text-sm font-semibold text-foreground">
-                    {{ product.name }}
+                <div class="flex items-start justify-between gap-2 pt-4 pl-4 pr-3">
+                    <span class="text-sm font-semibold text-foreground">
+                        {{ product.name }}
+                    </span>
+                    <span
+                        v-if="product.flash_price != null"
+                        class="shrink-0 rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-bold text-white"
+                    >
+                        -{{ product.flash_discount_percent }}%
+                    </span>
                 </div>
                 <div
                     class="mt-2 flex flex-1 flex-col justify-between text-sm font-bold text-primary"
@@ -113,15 +121,20 @@ const filteredProducts = computed(() => {
                         </div>
                         <div>
                             <span
-                                class="flex items-center text-[14px] font-semibold text-primary md:text-[16px]"
-                                id="headlessui-description-:r1u:"
+                                v-if="product.flash_price != null"
+                                class="block text-xs font-medium text-muted-foreground line-through"
                             >
-                                {{ formatCurrency(product.sell_price) }}</span
+                                {{ formatCurrency(product.sell_price) }}
+                            </span>
+                            <span
+                                class="flex items-center text-[14px] font-semibold text-primary md:text-[16px]"
+                            >
+                                {{ formatCurrency(product.flash_price ?? product.sell_price) }}</span
                             >
                         </div>
                     </div>
                     <div
-                        class="mt-5 flex w-full flex-col gap-2 bg-background p-4 text-xs font-semibold text-foreground"
+                        class="mt-5 flex w-full flex-col gap-2 bg-card p-4 text-xs font-semibold text-foreground"
                     >
                         <div
                             class="flex items-center gap-2"

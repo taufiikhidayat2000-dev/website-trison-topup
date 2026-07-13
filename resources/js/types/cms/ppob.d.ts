@@ -66,6 +66,9 @@ export interface PPOBProductDataItem {
     updated_at: string;
     brand?: PPOBBrandDataItem;
     product_category?: PPOBProductCategoryDataItem;
+    flash_price?: number;
+    flash_discount_percent?: number;
+    flash_remaining_stock?: number;
 }
 
 export interface PPOBDepositDataItem {

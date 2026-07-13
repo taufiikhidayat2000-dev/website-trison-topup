@@ -19,7 +19,7 @@ function getSetting(?string $key = null)
         60,
         120,
     ], function () {
-        return Setting::first()->value;
+        return Setting::first()?->value ?? [];
     });
 
     // If no key is provided, return the whole setting object

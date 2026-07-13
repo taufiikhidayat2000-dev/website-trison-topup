@@ -31,6 +31,7 @@ export function toUrl(href: NonNullable<InertiaLinkProps['href']> | undefined) {
 
 export function formatCurrency(amount: any) {
     return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
         currency: 'IDR',
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,

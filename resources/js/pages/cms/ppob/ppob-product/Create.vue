@@ -280,13 +280,13 @@ watch(selectedBrand, () => {
                 <div class="grid gap-2">
                     <Label for="logo">Image</Label>
                     <InputDescription>
-                        Upload the PPOB product image (Max 5MB).
+                        Upload the PPOB product image (Max 5MB). Recommended size: 500x500 px (square).
                     </InputDescription>
                     <ImageUploadPreview
                         input-id="image"
                         input-name="image"
                         label=""
-                        description="Upload your PPOB product image here."
+                        description="Upload your PPOB product image here. Recommended size: 500x500 px (square)."
                         accept="image/*"
                         :max-size="5"
                         preview-height="200px"

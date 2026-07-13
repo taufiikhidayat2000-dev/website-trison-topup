@@ -19,6 +19,9 @@ Route::group([
     // Web Routes
     require 'cms/web.php';
 
+    // Marketing Routes
+    require 'cms/marketing.php';
+
     // PPOB Routes
     require 'cms/ppob.php';
 

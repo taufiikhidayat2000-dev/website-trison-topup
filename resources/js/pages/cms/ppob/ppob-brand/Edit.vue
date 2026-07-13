@@ -174,13 +174,13 @@ const deleteServer = (index: number) => {
                 <div class="grid gap-2">
                     <Label for="image">Image</Label>
                     <InputDescription>
-                        Upload the PPOB brand image (Max 5MB).
+                        Upload the PPOB brand image (Max 5MB). Recommended size: 500x500 px (square).
                     </InputDescription>
                     <ImageUploadPreview
                         input-id="image"
                         input-name="image"
                         label=""
-                        description="Upload your PPOB brand image here."
+                        description="Upload your PPOB brand image here. Recommended size: 500x500 px (square)."
                         accept="image/*"
                         :max-size="5"
                         preview-height="200px"
@@ -192,13 +192,13 @@ const deleteServer = (index: number) => {
                 <div class="grid gap-2">
                     <Label for="banner">Banner</Label>
                     <InputDescription>
-                        Upload the PPOB brand banner (Max 5MB).
+                        Upload the PPOB brand banner (Max 5MB). Recommended size: 1920x1080 px (ratio 16:9) — the most common banner format.
                     </InputDescription>
                     <ImageUploadPreview
                         input-id="banner"
                         input-name="banner"
                         label=""
-                        description="Upload your PPOB brand banner here."
+                        description="Upload your PPOB brand banner here. Recommended size: 1920x1080 px (ratio 16:9)."
                         accept="image/*"
                         :max-size="5"
                         preview-height="200px"
@@ -213,13 +213,13 @@ const deleteServer = (index: number) => {
                     >
                     <InputDescription>
                         Upload the default product image for this PPOB brand
-                        (Max 2MB).
+                        (Max 2MB). Recommended size: 500x500 px (square).
                     </InputDescription>
                     <ImageUploadPreview
                         input-id="default_product_image"
                         input-name="default_product_image"
                         label=""
-                        description="Upload your default product image here."
+                        description="Upload your default product image here. Recommended size: 500x500 px (square)."
                         accept="image/*"
                         :max-size="2"
                         preview-height="200px"

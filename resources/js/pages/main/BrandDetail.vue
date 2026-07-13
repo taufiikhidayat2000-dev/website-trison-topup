@@ -281,7 +281,9 @@ const paymentMethods = [
 const totalAmount = computed(() => {
     if (!selectedProductData.value) return 0;
 
-    const basePrice = selectedProductData.value.sell_price;
+    const basePrice =
+        selectedProductData.value.flash_price ??
+        selectedProductData.value.sell_price;
     const priceAfterDiscount = Math.max(0, basePrice - discountAmount.value);
 
     // Manual and balance payments have no fee

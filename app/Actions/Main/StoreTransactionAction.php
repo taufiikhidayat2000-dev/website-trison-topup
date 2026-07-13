@@ -2,7 +2,9 @@
 
 namespace App\Actions\Main;
 
+use App\Actions\FlashSale\ResolveFlashSalePriceAction;
 use App\Mail\OrderCreated;
+use App\Models\FlashSale\FlashSaleUse;
 use App\Models\Order\Order;
 use App\Models\Payment\Payment;
 use App\Models\PPOB\PPOBProduct;
@@ -36,12 +38,15 @@ class StoreTransactionAction
             prefix: 'TRX-'.now()->format('Ymd').'-',
         );
 
-        // Get price from product
+        // Get price from product, substituting the flash-sale price if this
+        // product is currently in a purchasable Flash Sale with stock left.
         $product = PPOBProduct::find($data['product_id']);
+        $flashSale = app(ResolveFlashSalePriceAction::class)->handle($product->id);
 
         $data['reference'] = $reference['code'];
         $data['ref_number'] = $reference['number'];
-        $data['amount'] = (int) $product->sell_price;
+        $data['amount'] = (int) ($flashSale['flash_price'] ?? $product->sell_price);
+        $data['flash_sale_id'] = $flashSale['flash_sale_id'] ?? null;
         $data['user_id'] = auth()->id() ?? null;
 
         // Voucher Logic
@@ -129,6 +134,20 @@ class StoreTransactionAction
         }
 
         $order = Order::create($data);
+
+        // Record Flash Sale Usage (snapshot the original price so reports stay
+        // accurate even after the sale ends or the product's price changes later)
+        if ($flashSale) {
+            FlashSaleUse::create([
+                'flash_sale_id' => $flashSale['flash_sale_id'],
+                'flash_sale_product_id' => $flashSale['flash_sale_product_id'],
+                'usable_type' => Order::class,
+                'usable_id' => $order->id,
+                'original_price' => $product->sell_price,
+                'flash_price' => $flashSale['flash_price'],
+                'discount_amount' => $product->sell_price - $flashSale['flash_price'],
+            ]);
+        }
 
         // Record Voucher Usage
         if ($voucher && $discountAmount > 0) {
