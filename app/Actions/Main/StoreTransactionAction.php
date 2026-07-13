@@ -289,11 +289,51 @@ class StoreTransactionAction
         }
 
         // Default / fallback: LinkQu
+        $customerId = (string) ($order->user_id ?? $payment->id);
+
         if ($paymentMethod === 'qris') {
             $result = $this->linkQuService->createQris(
                 partnerReff: $payment->order_id,
                 amount: $payment->amount,
-                customerId: (string) ($order->user_id ?? $payment->id),
+                customerId: $customerId,
+                customerName: $order->name,
+                customerEmail: $order->email,
+                customerPhone: $order->phone,
+            );
+        } elseif ($paymentMethod === 'ovo') {
+            $result = $this->linkQuService->createOvoPush(
+                partnerReff: $payment->order_id,
+                amount: $payment->amount,
+                customerId: $customerId,
+                customerName: $order->name,
+                customerEmail: $order->email,
+                customerPhone: $order->phone,
+            );
+        } elseif ($paymentMethod === 'credit_card') {
+            $result = $this->linkQuService->createCreditCard(
+                partnerReff: $payment->order_id,
+                amount: $payment->amount,
+                customerId: $customerId,
+                customerName: $order->name,
+                customerEmail: $order->email,
+                customerPhone: $order->phone,
+            );
+        } elseif (array_key_exists($paymentMethod, LinkQuService::EWALLETS)) {
+            $result = $this->linkQuService->createEwallet(
+                partnerReff: $payment->order_id,
+                amount: $payment->amount,
+                retailCode: LinkQuService::EWALLETS[$paymentMethod],
+                customerId: $customerId,
+                customerName: $order->name,
+                customerEmail: $order->email,
+                customerPhone: $order->phone,
+            );
+        } elseif (array_key_exists($paymentMethod, LinkQuService::RETAILS)) {
+            $result = $this->linkQuService->createRetail(
+                partnerReff: $payment->order_id,
+                amount: $payment->amount,
+                retailCode: LinkQuService::RETAILS[$paymentMethod],
+                customerId: $customerId,
                 customerName: $order->name,
                 customerEmail: $order->email,
                 customerPhone: $order->phone,
@@ -302,14 +342,19 @@ class StoreTransactionAction
             $bankCode = LinkQuService::BANKS[$paymentMethod] ?? null;
 
             if (! $bankCode) {
-                throw new \Exception('Invalid bank. Valid banks are: '.implode(', ', array_keys(LinkQuService::BANKS)));
+                throw new \Exception('Invalid payment method. Valid methods are: '.implode(', ', [
+                    ...array_keys(LinkQuService::BANKS),
+                    ...array_keys(LinkQuService::EWALLETS),
+                    ...array_keys(LinkQuService::RETAILS),
+                    'qris', 'credit_card',
+                ]));
             }
 
             $result = $this->linkQuService->createVirtualAccount(
                 partnerReff: $payment->order_id,
                 amount: $payment->amount,
                 bankCode: $bankCode,
-                customerId: (string) ($order->user_id ?? $payment->id),
+                customerId: $customerId,
                 customerName: $order->name,
                 customerEmail: $order->email,
                 customerPhone: $order->phone,

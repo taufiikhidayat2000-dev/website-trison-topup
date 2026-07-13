@@ -266,8 +266,10 @@ class LinkQuService
         $path = '/linkqu-partner/transaction/create/paymentewallet';
         $expired = $expiredAt ?? now()->addHours(24)->format('YmdHis');
 
+        // Formula includes ewallet_phone (per LinkQu docs: "Create E-Wallet and OVO"),
+        // unlike retail/credit card which share the same endpoint shape but omit it.
         $signature = $this->buildCreateSignature($path, 'POST', [
-            $amount, $expired, $retailCode, $partnerReff, $customerId, $customerName, $customerEmail, $this->clientId,
+            $amount, $expired, $retailCode, $partnerReff, $customerId, $customerName, $customerEmail, $customerPhone, $this->clientId,
         ]);
 
         $response = Http::withHeaders($this->headers())->post($this->baseUrl.$path, [
@@ -295,6 +297,110 @@ class LinkQuService
             'account' => $json['url_payment'] ?? $json['payment_code'] ?? null,
             'code' => $retailCode,
             'message' => $json['response_desc'] ?? 'Failed to create e-wallet payment',
+            'raw' => $json,
+        ];
+    }
+
+    /**
+     * Create an OVO payment (push notification to the customer's OVO app).
+     * Unlike the other e-wallets, OVO has its own dedicated endpoint.
+     *
+     * @return array{successful: bool, transaction_id: ?string, account: ?string, code: ?string, message: string, raw: array}
+     */
+    public function createOvoPush(
+        string $partnerReff,
+        int $amount,
+        string $customerId,
+        string $customerName,
+        string $customerEmail,
+        string $customerPhone,
+        ?string $expiredAt = null,
+    ): array {
+        $path = '/linkqu-partner/transaction/create/ovopush';
+        $expired = $expiredAt ?? now()->addHours(24)->format('YmdHis');
+        $retailCode = 'PAYOVO';
+
+        $signature = $this->buildCreateSignature($path, 'POST', [
+            $amount, $expired, $retailCode, $partnerReff, $customerId, $customerName, $customerEmail, $customerPhone, $this->clientId,
+        ]);
+
+        $response = Http::withHeaders($this->headers())->post($this->baseUrl.$path, [
+            'amount' => $amount,
+            'partner_reff' => $partnerReff,
+            'customer_id' => $customerId,
+            'customer_name' => $customerName,
+            'expired' => $expired,
+            'username' => $this->username,
+            'pin' => $this->pin,
+            'retail_code' => $retailCode,
+            'customer_phone' => $customerPhone,
+            'customer_email' => $customerEmail,
+            'ewallet_phone' => $customerPhone,
+            'bill_title' => 'Payment '.$partnerReff,
+            'signature' => $signature,
+            'url_callback' => config('linkqu.callback_url'),
+        ]);
+
+        $json = $response->json() ?? [];
+
+        return [
+            'successful' => $response->successful() && ($json['response_code'] ?? null) === '00',
+            'transaction_id' => $json['partner_reff2'] ?? null,
+            'account' => $json['url_payment'] ?? $json['payment_code'] ?? null,
+            'code' => $retailCode,
+            'message' => $json['response_desc'] ?? 'Failed to create OVO payment',
+            'raw' => $json,
+        ];
+    }
+
+    /**
+     * Create a credit card payment.
+     *
+     * @return array{successful: bool, transaction_id: ?string, account: ?string, code: ?string, message: string, raw: array}
+     */
+    public function createCreditCard(
+        string $partnerReff,
+        int $amount,
+        string $customerId,
+        string $customerName,
+        string $customerEmail,
+        string $customerPhone,
+        ?string $expiredAt = null,
+    ): array {
+        $path = '/linkqu-partner/transaction/payment/creditcard';
+        $expired = $expiredAt ?? now()->addHours(24)->format('YmdHis');
+        $retailCode = 'CREDITCARD';
+
+        // Credit card shares the retail/OVO endpoint shape but its formula (per LinkQu
+        // docs) omits ewallet_phone, same as retail payment codes.
+        $signature = $this->buildCreateSignature($path, 'POST', [
+            $amount, $expired, $retailCode, $partnerReff, $customerId, $customerName, $customerEmail, $this->clientId,
+        ]);
+
+        $response = Http::withHeaders($this->headers())->post($this->baseUrl.$path, [
+            'amount' => $amount,
+            'partner_reff' => $partnerReff,
+            'customer_id' => $customerId,
+            'customer_name' => $customerName,
+            'expired' => $expired,
+            'username' => $this->username,
+            'pin' => $this->pin,
+            'retail_code' => $retailCode,
+            'customer_phone' => $customerPhone,
+            'customer_email' => $customerEmail,
+            'bill_title' => 'Payment '.$partnerReff,
+            'signature' => $signature,
+            'url_callback' => config('linkqu.callback_url'),
+        ]);
+
+        $json = $response->json() ?? [];
+
+        return [
+            'successful' => $response->successful() && ($json['response_code'] ?? null) === '00',
+            'transaction_id' => $json['partner_reff2'] ?? null,
+            'account' => $json['url_payment'] ?? $json['payment_code'] ?? null,
+            'code' => $retailCode,
+            'message' => $json['response_desc'] ?? 'Failed to create credit card payment',
             'raw' => $json,
         ];
     }
