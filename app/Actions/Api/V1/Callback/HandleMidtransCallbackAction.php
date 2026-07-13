@@ -2,6 +2,7 @@
 
 namespace App\Actions\Api\V1\Callback;
 
+use App\Actions\FlashSale\SettleFlashSaleStockAction;
 use App\Enums\PaymentStatusEnum;
 use App\Mail\PaymentFailed;
 use App\Mail\PaymentSuccess;
@@ -19,6 +20,7 @@ class HandleMidtransCallbackAction
     public function __construct(
         public readonly MidtransService $midtransService,
         public readonly VodaService $vodaService,
+        public readonly SettleFlashSaleStockAction $settleFlashSaleStockAction,
     ) {}
 
     public function handle(array $payload)
@@ -106,6 +108,8 @@ class HandleMidtransCallbackAction
         $order->update([
             'payment_status' => PaymentStatusEnum::SETTLEMENT,
         ]);
+
+        $this->settleFlashSaleStockAction->handle($order);
 
         $this->sendOrderNotification($order, true);
     }

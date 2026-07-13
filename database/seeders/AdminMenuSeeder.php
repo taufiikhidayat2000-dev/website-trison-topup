@@ -26,6 +26,7 @@ class AdminMenuSeeder extends Seeder
         $this->dashboardMenu();
         $this->orderMenu();
         $this->webMenu();
+        $this->marketingMenu();
         $this->memberMenu();
     }
 
@@ -115,6 +116,27 @@ class AdminMenuSeeder extends Seeder
             'url' => '/cms/web/vouchers',
             'order' => 3,
             'active_pattern' => '/cms/web/vouchers',
+            'status' => 1,
+        ]);
+    }
+
+    public function marketingMenu()
+    {
+        $marketing = Menu::create([
+            'role_id' => $this->role->id,
+            'name' => 'Marketing',
+            'url' => '#',
+            'icon' => 'Megaphone',
+            'order' => 22,
+            'active_pattern' => '/cms/marketing',
+            'status' => 1,
+        ]);
+        $marketing->subMenu()->create([
+            'role_id' => $this->role->id,
+            'name' => 'Flash Sale',
+            'url' => '/cms/marketing/flash-sales',
+            'order' => 1,
+            'active_pattern' => '/cms/marketing/flash-sales',
             'status' => 1,
         ]);
     }

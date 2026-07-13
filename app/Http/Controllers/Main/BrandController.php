@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Main;
 
 use App\Http\Controllers\Controller;
+use App\Models\FlashSale\FlashSale;
 use App\Models\PPOB\PPOBBrand;
 use App\Models\Review\Review;
 use App\Models\Web\Faq;
@@ -19,11 +20,24 @@ class BrandController extends Controller
         $brand->banner = $brand->getFirstMediaUrl('banner');
         $brand->default_product_image = $brand->getFirstMediaUrl('default_product_image');
 
-        $brand->products->each(function ($product) use ($brand) {
+        $flashSale = FlashSale::cachedVisible();
+        $flashSaleProducts = ($flashSale && $flashSale->isPurchasable())
+            ? $flashSale->products->where('status', '!=', 'sold_out')->keyBy('p_p_o_b_product_id')
+            : collect();
+
+        $brand->products->each(function ($product) use ($brand, $flashSaleProducts) {
             $product->image = $product->getFirstMediaUrl('image')
                 ?: $product->productCategory?->getFirstMediaUrl('image')
                 ?: $brand->default_product_image;
             $product->makeHidden('media');
+
+            $flashSaleProduct = $flashSaleProducts->get($product->id);
+            if ($flashSaleProduct) {
+                $product->flash_price = $flashSaleProduct->flash_price;
+                $product->flash_discount_percent = $flashSaleProduct->discount_percent
+                    ?? round((1 - $flashSaleProduct->flash_price / $product->sell_price) * 100);
+                $product->flash_remaining_stock = $flashSaleProduct->remaining_stock;
+            }
         });
 
         $brand->makeHidden('media');

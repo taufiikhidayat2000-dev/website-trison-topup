@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
     <div
-        class="relative h-64 overflow-hidden bg-gradient-to-r from-primary/20 to-primary/5"
+        class="relative aspect-video max-h-[480px] min-h-64 w-full overflow-hidden bg-gradient-to-r from-primary/20 to-primary/5"
     >
         <img
             v-if="brand.banner"

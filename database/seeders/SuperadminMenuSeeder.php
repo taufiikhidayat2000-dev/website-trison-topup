@@ -27,6 +27,7 @@ class SuperadminMenuSeeder extends Seeder
         $this->orderMenu();
         $this->ppobMenu();
         $this->webMenu();
+        $this->marketingMenu();
         $this->memberMenu();
         $this->settingMenu();
         $this->reportMenu();
@@ -197,6 +198,27 @@ class SuperadminMenuSeeder extends Seeder
             'url' => '/cms/web/reviews',
             'order' => 4,
             'active_pattern' => '/cms/web/reviews',
+            'status' => 1,
+        ]);
+    }
+
+    public function marketingMenu()
+    {
+        $marketing = Menu::create([
+            'role_id' => $this->role->id,
+            'name' => 'Marketing',
+            'url' => '#',
+            'icon' => 'Megaphone',
+            'order' => 22,
+            'active_pattern' => '/cms/marketing',
+            'status' => 1,
+        ]);
+        $marketing->subMenu()->create([
+            'role_id' => $this->role->id,
+            'name' => 'Flash Sale',
+            'url' => '/cms/marketing/flash-sales',
+            'order' => 1,
+            'active_pattern' => '/cms/marketing/flash-sales',
             'status' => 1,
         ]);
     }

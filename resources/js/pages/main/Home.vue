@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { index } from '@/actions/App/Http/Controllers/Main/HomeController';
 import BrandCard from '@/components/BrandCard.vue';
+import FlashSaleSection from '@/components/FlashSaleSection.vue';
 import HeroBanner from '@/components/HeroBanner.vue';
 import MainFooter from '@/components/MainFooter.vue';
 import MainHeader from '@/components/MainHeader.vue';
@@ -15,6 +16,7 @@ defineProps<{
     brands: PaginationItem<PPOBBrandDataItem>;
     featured_brands: PPOBBrandDataItem[];
     categories: PPOBCategoryDataItem[];
+    active_flash_sale: any | null;
 }>();
 
 const page = usePage();
@@ -61,6 +63,9 @@ const appUrl = page.props.app_url;
                 :autoplay="true"
                 :interval="50000"
             />
+
+            <!-- Flash Sale Section -->
+            <FlashSaleSection v-if="active_flash_sale" :flash-sale="active_flash_sale" />
 
             <!-- Categories Section -->
             <section class="mb-8">

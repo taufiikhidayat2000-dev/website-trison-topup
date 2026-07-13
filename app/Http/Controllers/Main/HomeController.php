@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Main;
 
 use App\Http\Controllers\Controller;
+use App\Models\FlashSale\FlashSale;
 use App\Models\PPOB\PPOBBrand;
 use App\Models\PPOB\PPOBCategory;
 use App\Models\Web\Slider;
@@ -24,7 +25,26 @@ class HomeController extends Controller
         $settingTitle = getSetting('title');
         $settingFavicon = getSetting('favicon') ?: '/favicon.svg';
 
+        $activeFlashSale = FlashSale::cachedVisible();
+        if ($activeFlashSale) {
+            $activeFlashSale->icon_image_url = $activeFlashSale->getFirstMediaUrl('icon');
+            $activeFlashSale->banner_url = $activeFlashSale->getFirstMediaUrl('banner');
+            $activeFlashSale->makeHidden('media');
+            $activeFlashSale->products->each(function ($fsp) {
+                $fsp->product->image = $fsp->product->getFirstMediaUrl('image')
+                    ?: $fsp->product->brand?->getFirstMediaUrl('default_product_image');
+
+                if ($fsp->product->brand) {
+                    $fsp->product->brand->image = $fsp->product->brand->getFirstMediaUrl('image');
+                    $fsp->product->brand->makeHidden('media');
+                }
+
+                $fsp->product->makeHidden('media');
+            });
+        }
+
         return inertia()->render('main/Home', [
+            'active_flash_sale' => $activeFlashSale,
             'sliders' => Slider::query()
                 ->with('media')
                 ->where('status', true)

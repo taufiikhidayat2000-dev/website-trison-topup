@@ -63,7 +63,9 @@ const checkVoucher = async () => {
     try {
         const response = await axios.post(checkVoucherRoute().url, {
             voucher_code: voucherCode.value,
-            amount: props.selectedProduct.sell_price,
+            amount:
+                props.selectedProduct.flash_price ??
+                props.selectedProduct.sell_price,
         });
 
         if (response.data.data.valid) {
@@ -195,8 +197,19 @@ watch(
 
                 <div v-if="selectedProduct" class="flex justify-between">
                     <span class="text-muted-foreground">Harga:</span>
-                    <span class="font-medium text-foreground">
-                        {{ formatCurrency(selectedProduct.sell_price) }}
+                    <span class="text-right font-medium text-foreground">
+                        <span
+                            v-if="selectedProduct.flash_price != null"
+                            class="mr-1 text-xs text-muted-foreground line-through"
+                        >
+                            {{ formatCurrency(selectedProduct.sell_price) }}
+                        </span>
+                        {{
+                            formatCurrency(
+                                selectedProduct.flash_price ??
+                                    selectedProduct.sell_price,
+                            )
+                        }}
                     </span>
                 </div>
 
@@ -233,7 +246,8 @@ watch(
                                     0,
                                     totalAmount +
                                         discountAmount -
-                                        selectedProduct.sell_price,
+                                        (selectedProduct.flash_price ??
+                                            selectedProduct.sell_price),
                                 ),
                             )
                         }}

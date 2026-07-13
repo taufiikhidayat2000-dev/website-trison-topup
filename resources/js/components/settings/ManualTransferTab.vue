@@ -86,7 +86,7 @@ defineProps<{
             input-id="manual_transfer_bank_logo"
             input-name="value[manual_transfer_bank_logo]"
             label="Bank Logo"
-            description="Upload bank logo (PNG or JPG, max 2MB)"
+            description="Upload bank logo (PNG or JPG, max 2MB). Recommended size: 300x150 px (ratio 2:1)."
             :max-size="2"
             preview-height="150px"
             :initial-preview="setting?.manual_transfer_bank_logo || ''"

@@ -4,6 +4,8 @@ namespace App\Models\Order;
 
 use App\Enums\DigiflazzStatusEnum;
 use App\Enums\PaymentStatusEnum;
+use App\Models\FlashSale\FlashSale;
+use App\Models\FlashSale\FlashSaleUse;
 use App\Models\Payment\Payment;
 use App\Models\PPOB\PPOBBrand;
 use App\Models\PPOB\PPOBProduct;
@@ -41,6 +43,7 @@ class Order extends Model implements HasMedia
         'amount',
         'fee',
         'discount_amount',
+        'flash_sale_id',
         'total_amount',
         'payment_status',
         'topup_status',
@@ -88,6 +91,16 @@ class Order extends Model implements HasMedia
     public function voucherUse()
     {
         return $this->morphOne(VoucherUse::class, 'usable');
+    }
+
+    public function flashSaleUse()
+    {
+        return $this->morphOne(FlashSaleUse::class, 'usable');
+    }
+
+    public function flashSale()
+    {
+        return $this->belongsTo(FlashSale::class);
     }
 
     public function review()

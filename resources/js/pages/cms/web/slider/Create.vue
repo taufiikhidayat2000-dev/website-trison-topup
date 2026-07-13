@@ -94,13 +94,13 @@ const { toast } = useSwal();
                 <div class="grid gap-2">
                     <Label for="logo">Image</Label>
                     <InputDescription>
-                        Upload the Slider image (Max 5MB).
+                        Upload the Slider image (Max 5MB). Recommended size: 1800x600 px (ratio 3:1).
                     </InputDescription>
                     <ImageUploadPreview
                         input-id="image"
                         input-name="image"
                         label=""
-                        description="Upload your Slider image here."
+                        description="Upload your Slider image here. Recommended size: 1800x600 px (ratio 3:1)."
                         accept="image/*"
                         :max-size="5"
                         preview-height="200px"
