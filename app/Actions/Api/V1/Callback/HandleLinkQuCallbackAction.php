@@ -54,7 +54,11 @@ class HandleLinkQuCallbackAction
         return $payment;
     }
 
-    protected function handlePaymentStatus(?string $status, Payment $payment)
+    /**
+     * Public so ReconcileLinkQuPayments can reuse the same capture/deny logic
+     * when settling a payment found via status polling instead of a webhook.
+     */
+    public function handlePaymentStatus(?string $status, Payment $payment)
     {
         switch ($status) {
             case 'SUCCESS':
