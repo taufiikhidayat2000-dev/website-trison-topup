@@ -204,6 +204,138 @@ const uploadProof = () => {
             </div>
         </div>
 
+        <!-- Automatic Gateway E-Wallet (OVO push / DANA / LinkAja / ShopeePay redirect) -->
+        <div
+            v-else-if="
+                ['linkqu', 'midtrans'].includes(payment.driver) &&
+                payment.payment_type === 'ewallet'
+            "
+            class="space-y-4"
+        >
+            <div class="rounded-lg bg-muted/50 p-4">
+                <p class="mb-2 text-sm text-muted-foreground">
+                    Metode Pembayaran:
+                </p>
+                <p class="text-xl font-bold text-foreground">
+                    {{ payment.channel.toUpperCase() }}
+                </p>
+            </div>
+
+            <div class="rounded-lg bg-muted/50 p-4">
+                <p class="mb-2 text-sm text-muted-foreground">Total Bayar:</p>
+                <p class="text-2xl font-bold text-primary">
+                    {{ formatCurrency(totalAmount) }}
+                </p>
+            </div>
+
+            <a
+                v-if="payment.account_number?.startsWith('http')"
+                :href="payment.account_number"
+                target="_blank"
+                rel="noopener"
+            >
+                <Button class="w-full">Bayar Sekarang</Button>
+            </a>
+            <div
+                v-else
+                class="rounded-lg bg-blue-500/10 p-3 text-xs text-blue-600"
+            >
+                <p class="font-medium">Cara Bayar:</p>
+                <p class="mt-1">
+                    Buka aplikasi {{ payment.channel.toUpperCase() }} di HP
+                    kamu, notifikasi pembayaran akan muncul otomatis. Selesaikan
+                    pembayaran di sana.
+                </p>
+            </div>
+
+            <div
+                class="flex items-center gap-4 rounded-xl border border-yellow-500/50 bg-yellow-500/10 p-5 text-yellow-600 shadow-[0_0_15px_rgba(234,179,8,0.1)]"
+                v-if="payment?.paid_at === null"
+            >
+                <div
+                    class="flex h-12 w-12 animate-pulse items-center justify-center rounded-full bg-yellow-500/20"
+                >
+                    <Clock class="h-6 w-6 text-yellow-600" />
+                </div>
+
+                <div>
+                    <p
+                        class="text-xs font-bold tracking-wider uppercase opacity-80"
+                    >
+                        Batas Waktu Pembayaran
+                    </p>
+                    <p class="text-xl font-black tabular-nums">
+                        {{
+                            dayjs(payment.expired_at)
+                                .locale('id')
+                                .format('DD MMM YYYY, HH:mm')
+                        }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Automatic Gateway Retail (Alfamart / Indomaret payment code) -->
+        <div
+            v-else-if="
+                ['linkqu', 'midtrans'].includes(payment.driver) &&
+                payment.payment_type === 'retail'
+            "
+            class="space-y-4"
+        >
+            <div class="rounded-lg bg-muted/50 p-4">
+                <p class="mb-2 text-sm text-muted-foreground">
+                    Bayar di kasir {{ payment.channel.toUpperCase() }} dengan
+                    kode:
+                </p>
+                <div class="flex items-center justify-between">
+                    <p class="text-2xl font-bold text-foreground">
+                        {{ payment.account_number }}
+                    </p>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        @click="copyToClipboard(payment.account_number)"
+                    >
+                        <Copy class="h-4 w-4" />
+                    </Button>
+                </div>
+            </div>
+
+            <div class="rounded-lg bg-muted/50 p-4">
+                <p class="mb-2 text-sm text-muted-foreground">Total Bayar:</p>
+                <p class="text-2xl font-bold text-primary">
+                    {{ formatCurrency(totalAmount) }}
+                </p>
+            </div>
+
+            <div
+                class="flex items-center gap-4 rounded-xl border border-yellow-500/50 bg-yellow-500/10 p-5 text-yellow-600 shadow-[0_0_15px_rgba(234,179,8,0.1)]"
+                v-if="payment?.paid_at === null"
+            >
+                <div
+                    class="flex h-12 w-12 animate-pulse items-center justify-center rounded-full bg-yellow-500/20"
+                >
+                    <Clock class="h-6 w-6 text-yellow-600" />
+                </div>
+
+                <div>
+                    <p
+                        class="text-xs font-bold tracking-wider uppercase opacity-80"
+                    >
+                        Batas Waktu Pembayaran
+                    </p>
+                    <p class="text-xl font-black tabular-nums">
+                        {{
+                            dayjs(payment.expired_at)
+                                .locale('id')
+                                .format('DD MMM YYYY, HH:mm')
+                        }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <!-- Balance Payment (instant, always already paid) -->
         <div v-else-if="payment.driver === 'balance'" class="space-y-4">
             <div

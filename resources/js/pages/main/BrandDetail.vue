@@ -191,6 +191,90 @@ const paymentMethods = [
         action: 'add' as const,
         img: '/images/PERMATA.svg',
     },
+    {
+        id: 'cimb',
+        name: 'Virtual Account CIMB Niaga',
+        fee: 4000, // Flat 4000 IDR
+        action: 'add' as const,
+        img: '/images/CIMB.svg',
+    },
+    {
+        id: 'danamon',
+        name: 'Virtual Account Danamon',
+        fee: 4000, // Flat 4000 IDR
+        action: 'add' as const,
+        img: '/images/DANAMON.svg',
+    },
+    {
+        id: 'bsi',
+        name: 'Virtual Account BSI',
+        fee: 4000, // Flat 4000 IDR
+        action: 'add' as const,
+        img: '/images/BSI.svg',
+    },
+    {
+        id: 'bnc',
+        name: 'Virtual Account Neo Commerce',
+        fee: 4000, // Flat 4000 IDR
+        action: 'add' as const,
+        img: '/images/BNC.svg',
+    },
+    {
+        id: 'ocbc',
+        name: 'Virtual Account OCBC',
+        fee: 4000, // Flat 4000 IDR
+        action: 'add' as const,
+        img: '/images/OCBC.svg',
+    },
+    {
+        id: 'muamalat',
+        name: 'Virtual Account Muamalat',
+        fee: 4000, // Flat 4000 IDR
+        action: 'add' as const,
+        img: '/images/MUAMALAT.svg',
+    },
+    {
+        id: 'ovo',
+        name: 'OVO',
+        fee: 0.007, // 0.7%
+        action: 'multiply' as const,
+        img: '/images/OVO.svg',
+    },
+    {
+        id: 'dana',
+        name: 'DANA',
+        fee: 0.007, // 0.7%
+        action: 'multiply' as const,
+        img: '/images/DANA.svg',
+    },
+    {
+        id: 'linkaja',
+        name: 'LinkAja',
+        fee: 0.007, // 0.7%
+        action: 'multiply' as const,
+        img: '/images/LINKAJA.svg',
+    },
+    {
+        id: 'shopeepay',
+        name: 'ShopeePay',
+        fee: 0.007, // 0.7%
+        action: 'multiply' as const,
+        img: '/images/SHOPEEPAY.svg',
+    },
+    {
+        id: 'alfamart',
+        name: 'Alfamart',
+        fee: 2500, // Flat 2500 IDR
+        action: 'add' as const,
+        img: '/images/ALFAMART.svg',
+    },
+    {
+        id: 'indomaret',
+        name: 'Indomaret',
+        fee: 2500, // Flat 2500 IDR
+        action: 'add' as const,
+        img: '/images/INDOMARET.svg',
+    },
 ];
 
 // Calculate total with fee

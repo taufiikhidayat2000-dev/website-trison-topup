@@ -161,7 +161,7 @@ class StoreTransactionAction
                 'payable_id' => $order->id,
                 'order_id' => $orderId,
                 'transaction_id' => null,
-                'payment_type' => $data['payment_method'] === 'qris' ? 'qris' : 'bank_transfer',
+                'payment_type' => $this->resolvePaymentType($data['payment_method']),
                 // AUTO_GENERATED
                 'account_number' => 'AUTO_GENERATED',
                 'channel' => $data['payment_method'],
@@ -366,5 +366,21 @@ class StoreTransactionAction
         }
 
         return $result;
+    }
+
+    /**
+     * Determine which payment_type the checkout UI should render for a given
+     * payment_method: qris (QR image), ewallet (redirect/push, e.g. OVO/DANA),
+     * retail (over-the-counter payment code, e.g. Alfamart), or the bank_transfer
+     * default (virtual account number).
+     */
+    protected function resolvePaymentType(string $paymentMethod): string
+    {
+        return match (true) {
+            $paymentMethod === 'qris' => 'qris',
+            $paymentMethod === 'ovo' || array_key_exists($paymentMethod, LinkQuService::EWALLETS) => 'ewallet',
+            array_key_exists($paymentMethod, LinkQuService::RETAILS) => 'retail',
+            default => 'bank_transfer',
+        };
     }
 }
