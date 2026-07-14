@@ -8,13 +8,13 @@ defineProps<{
 
 <template>
     <div
-        class="relative aspect-video max-h-[480px] min-h-64 w-full overflow-hidden bg-gradient-to-r from-primary/20 to-primary/5"
+        class="relative aspect-[820/312] max-h-[480px] min-h-64 w-full overflow-hidden bg-gradient-to-r from-primary/20 to-primary/5"
     >
         <img
             v-if="brand.banner"
             :src="brand.banner"
             :alt="brand.name"
-            class="h-full w-full object-cover"
+            class="h-full w-full object-contain"
         />
         <div
             class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"
