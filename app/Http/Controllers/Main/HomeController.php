@@ -22,6 +22,8 @@ class HomeController extends Controller
             $category = PPOBCategory::where('slug', $request->query('category'))->first();
         }
 
+        $search = $request->query('search');
+
         $settingTitle = getSetting('title');
         $settingFavicon = getSetting('favicon') ?: '/favicon.svg';
 
@@ -44,6 +46,7 @@ class HomeController extends Controller
         }
 
         return inertia()->render('main/Home', [
+            'search' => $search,
             'active_flash_sale' => $activeFlashSale,
             'sliders' => Slider::query()
                 ->with('media')
@@ -59,6 +62,7 @@ class HomeController extends Controller
             'brands' => inertia()->scroll(fn () => PPOBBrand::query()
                 ->with('category', 'media')
                 ->when($category, fn ($query) => $query->where('p_p_o_b_category_id', $category->id))
+                ->when($search, fn ($query) => $query->search($search))
                 ->where('status', true)
                 ->orderBy('order')
                 ->simplePaginate(12)

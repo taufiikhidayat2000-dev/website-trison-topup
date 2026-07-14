@@ -17,6 +17,7 @@ defineProps<{
     featured_brands: PPOBBrandDataItem[];
     categories: PPOBCategoryDataItem[];
     active_flash_sale: any | null;
+    search?: string | null;
 }>();
 
 const page = usePage();
@@ -49,84 +50,113 @@ const appUrl = page.props.app_url;
 
     <div class="flex min-h-screen flex-col bg-background">
         <!-- Header -->
-        <MainHeader />
+        <MainHeader
+            :show-search="true"
+            :search="search"
+            :popular-brands="featured_brands"
+        />
 
         <template v-if="setting?.maintenance_status === 'active'">
             <Maintenance />
         </template>
         <!-- Main Content -->
         <main class="mx-auto w-full max-w-7xl flex-1 px-4 py-8" v-else>
-            <!-- Hero Banner -->
-            <HeroBanner
-                class="mb-8"
-                :slides="sliders"
-                :autoplay="true"
-                :interval="50000"
-            />
+            <template v-if="!search">
+                <!-- Hero Banner -->
+                <HeroBanner
+                    class="mb-8"
+                    :slides="sliders"
+                    :autoplay="true"
+                    :interval="50000"
+                />
 
-            <!-- Flash Sale Section -->
-            <FlashSaleSection v-if="active_flash_sale" :flash-sale="active_flash_sale" />
+                <!-- Flash Sale Section -->
+                <FlashSaleSection
+                    v-if="active_flash_sale"
+                    :flash-sale="active_flash_sale"
+                />
 
-            <!-- Categories Section -->
-            <section class="mb-8">
-                <div class="mb-4">
-                    <h2 class="text-xl font-bold text-foreground">Kategori</h2>
-                </div>
-                <div class="flex gap-3 overflow-x-auto pb-2">
-                    <Link
-                        v-for="category in categories"
-                        :href="index().url + '?category=' + category.slug"
-                        :key="category.id"
-                        preserve-scroll
-                    >
-                        <button
-                            class="flex min-w-[140px] flex-col items-center gap-2 rounded-lg border border-border/50 bg-card p-4 transition-all hover:scale-105 hover:border-primary/50 hover:shadow-md"
+                <!-- Categories Section -->
+                <section class="mb-8">
+                    <div class="mb-4">
+                        <h2 class="text-xl font-bold text-foreground">
+                            Kategori
+                        </h2>
+                    </div>
+                    <div class="flex gap-3 overflow-x-auto pb-2">
+                        <Link
+                            v-for="category in categories"
+                            :href="index().url + '?category=' + category.slug"
+                            :key="category.id"
+                            preserve-scroll
                         >
-                            <img
-                                v-if="category.image"
-                                :src="category.image"
-                                alt="category.name"
-                                class="h-12 w-12 object-contain"
-                            />
-                            <span class="text-3xl" v-else> 🎮 </span>
-                            <span class="text-sm font-semibold text-foreground">
-                                {{ category.name }}
-                            </span>
-                            <span class="text-xs text-muted-foreground">
-                                {{ category.active_brands_count }} produk
-                            </span>
-                        </button>
-                    </Link>
-                </div>
-            </section>
+                            <button
+                                class="flex min-w-[140px] flex-col items-center gap-2 rounded-lg border border-border/50 bg-card p-4 transition-all hover:scale-105 hover:border-primary/50 hover:shadow-md"
+                            >
+                                <img
+                                    v-if="category.image"
+                                    :src="category.image"
+                                    alt="category.name"
+                                    class="h-12 w-12 object-contain"
+                                />
+                                <span class="text-3xl" v-else> 🎮 </span>
+                                <span
+                                    class="text-sm font-semibold text-foreground"
+                                >
+                                    {{ category.name }}
+                                </span>
+                                <span class="text-xs text-muted-foreground">
+                                    {{ category.active_brands_count }} produk
+                                </span>
+                            </button>
+                        </Link>
+                    </div>
+                </section>
 
-            <!-- Featured Brands Section -->
-            <section class="mb-8" v-if="featured_brands.length > 0">
-                <div class="mb-4">
-                    <h2 class="text-xl font-bold text-foreground">
-                        Produk Unggulan
-                    </h2>
-                </div>
-                <div
-                    class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
-                >
-                    <BrandCard
-                        v-for="brand in featured_brands"
-                        :key="brand.id"
-                        :brand="brand"
-                    />
-                </div>
-            </section>
+                <!-- Featured Brands Section -->
+                <section class="mb-8" v-if="featured_brands.length > 0">
+                    <div class="mb-4">
+                        <h2 class="text-xl font-bold text-foreground">
+                            Produk Unggulan
+                        </h2>
+                    </div>
+                    <div
+                        class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+                    >
+                        <BrandCard
+                            v-for="brand in featured_brands"
+                            :key="brand.id"
+                            :brand="brand"
+                        />
+                    </div>
+                </section>
+            </template>
 
             <!-- Brands Section -->
             <section>
                 <div class="mb-6">
                     <h2 class="text-xl font-bold text-foreground">
-                        Produk Populer
+                        <template v-if="search">
+                            Hasil pencarian untuk "{{ search }}"
+                        </template>
+                        <template v-else> Produk Populer </template>
                     </h2>
                 </div>
 
-                <InfiniteScroll data="brands">
+                <div
+                    v-if="search && brands?.data.length === 0"
+                    class="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border/50 py-16 text-center"
+                >
+                    <span class="text-4xl">🔍</span>
+                    <p class="font-semibold text-foreground">
+                        Game tidak ditemukan
+                    </p>
+                    <p class="text-sm text-muted-foreground">
+                        Coba kata kunci lain untuk menemukan game favoritmu.
+                    </p>
+                </div>
+
+                <InfiniteScroll v-else data="brands">
                     <div
                         class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
                     >

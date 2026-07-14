@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import SearchAutocomplete from '@/components/SearchAutocomplete.vue';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
 import { useAppearance } from '@/composables/useAppearance';
 import { useSwal } from '@/composables/useSwal';
+import { PPOBBrandDataItem } from '@/types/cms/ppob';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import {
     ArrowLeft,
@@ -25,6 +26,8 @@ import Button from './ui/button/Button.vue';
 interface Props {
     showSearch?: boolean;
     showBackButton?: boolean;
+    search?: string | null;
+    popularBrands?: PPOBBrandDataItem[];
 }
 
 const page = usePage();
@@ -39,6 +42,8 @@ const appLogo = page.props.setting?.logo;
 withDefaults(defineProps<Props>(), {
     showSearch: false,
     showBackButton: false,
+    search: '',
+    popularBrands: () => [],
 });
 
 const goBack = () => {
@@ -69,7 +74,9 @@ const logout = () => {
 </script>
 
 <template>
-    <header class="border-b border-cyan-400/20 bg-[#0B1020] shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+    <header
+        class="border-b border-cyan-400/20 bg-[#0B1020] shadow-[0_8px_30px_rgba(0,0,0,0.35)]"
+    >
         <div class="mx-auto max-w-7xl px-4 py-4">
             <div class="flex items-center justify-between gap-4">
                 <!-- Logo -->
@@ -96,13 +103,11 @@ const logout = () => {
                 </Link>
 
                 <!-- Search Bar (only on home) -->
-                <div v-if="showSearch" class="max-w-xl flex-1">
-                    <Input
-                        type="search"
-                        placeholder="Cari nama game"
-                        class="w-full border-border/50 bg-background/50 text-foreground placeholder:text-muted-foreground"
-                    />
-                </div>
+                <SearchAutocomplete
+                    v-if="showSearch"
+                    :search="search"
+                    :popular-brands="popularBrands"
+                />
 
                 <!-- Spacer when search is hidden -->
                 <div v-else class="flex-1"></div>
