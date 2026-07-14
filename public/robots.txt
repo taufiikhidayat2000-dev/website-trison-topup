@@ -1,2 +1,6 @@
 User-agent: *
-Disallow:
+Disallow: /profile
+Disallow: /deposits
+Disallow: /after-login
+
+Sitemap: https://trisontopup.com/sitemap.xml

@@ -170,7 +170,7 @@ watch(
                                     class="relative z-10 overflow-hidden border p-5"
                                 >
                                     <div
-                                        v-html="qrCodeSvg"
+                                        v-safe-html="qrCodeSvg"
                                         class="aspect-square w-full justify-center rounded-lg bg-white p-2 [&_svg]:size-full"
                                     />
                                 </div>

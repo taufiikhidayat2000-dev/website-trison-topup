@@ -86,10 +86,10 @@ const breadcrumbItems: BreadcrumbItem[] = [
                 :paginate="paginate"
             >
                 <template #question="{ row }">
-                    <span v-html="row.question"></span>
+                    <span v-safe-html="row.question"></span>
                 </template>
                 <template #answer="{ row }">
-                    <span v-html="row.answer"></span>
+                    <span v-safe-html="row.answer"></span>
                 </template>
                 <template #status="{ row }">
                     <span

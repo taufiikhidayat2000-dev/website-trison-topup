@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\V1\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 // Login
-Route::post('/login', [AuthenticatedController::class, 'store'])->name('login');
+Route::post('/login', [AuthenticatedController::class, 'store'])->middleware('throttle:5,1')->name('login');
 
 // Register
 Route::post('/register', [RegisterController::class, 'store'])->name('register');

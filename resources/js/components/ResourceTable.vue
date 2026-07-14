@@ -320,7 +320,7 @@ const toggleRow = (
                             :disabled="!link.url"
                             @click="onPageClick(link.url)"
                         >
-                            <span v-html="link.label"></span>
+                            <span v-safe-html="link.label"></span>
                         </Button>
                     </template>
                 </div>

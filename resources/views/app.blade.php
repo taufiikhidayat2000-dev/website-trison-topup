@@ -41,7 +41,7 @@
         @if(isset($meta['author']))
             <meta name="author" content="{{ $meta['author'] }}" />
         @endif
-        <meta name="type" content="website" />
+        <meta property="og:type" content="website" />
         <meta name="application-name" content="{{ $meta['application_name'] ?? config('app.name', 'Laravel') }}" />
 
         <!-- Open Graph -->
@@ -51,7 +51,7 @@
         @endif
         @if(isset($meta['url']))
             <meta property="og:url" content="{{ $meta['url'] }}" />
-            <meta property="canonical" content="{{ $meta['url'] }}" />
+            <link rel="canonical" href="{{ $meta['url'] }}" />
         @endif
         @if(isset($meta['image']))
             <meta property="og:image" content="{{ $meta['image'] }}" />
@@ -59,8 +59,17 @@
             <meta property="og:image:height" content="630" />
             <meta property="image" content="{{ $meta['image'] }}" />
         @endif
-        <link rel="shortcut icon" href="{{ getSetting('favicon') ?: '/favicon.svg' }}" />
-        <link rel="icon" type="image/svg+xml" href="{{ getSetting('favicon') ?: '/favicon.svg' }}" />
+        @php
+            $faviconPath = getSetting('favicon') ?: '/favicon.svg';
+            $faviconMime = match (strtolower(pathinfo($faviconPath, PATHINFO_EXTENSION))) {
+                'svg' => 'image/svg+xml',
+                'ico' => 'image/x-icon',
+                'jpg', 'jpeg' => 'image/jpeg',
+                default => 'image/png',
+            };
+        @endphp
+        <link rel="shortcut icon" href="{{ $faviconPath }}" />
+        <link rel="icon" type="{{ $faviconMime }}" href="{{ $faviconPath }}" />
 
         <!-- Twitter -->
         <meta property="twitter:title" content="{{ $meta['title'] ?? config('app.name', 'Laravel') }}" />

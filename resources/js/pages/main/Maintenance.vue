@@ -25,7 +25,7 @@ const setting = page.props.setting;
 
         <div
             class="prose prose-sm dark:prose-invert mx-auto text-muted-foreground sm:prose-base"
-            v-html="setting?.maintenance_description || '<p>Mohon maaf, saat ini sistem sedang dalam perbaikan rutin. Silakan kembali lagi nanti.</p>'"
+            v-safe-html="setting?.maintenance_description || '<p>Mohon maaf, saat ini sistem sedang dalam perbaikan rutin. Silakan kembali lagi nanti.</p>'"
         ></div>
     </main>
 </template>

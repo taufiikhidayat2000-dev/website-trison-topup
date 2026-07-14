@@ -11,6 +11,7 @@ use App\Http\Controllers\Main\ProfileController;
 use App\Http\Controllers\Main\ReviewController;
 use App\Http\Controllers\Main\SearchController;
 use App\Http\Controllers\Main\ShowDepositController;
+use App\Http\Controllers\Main\SitemapController;
 use App\Http\Controllers\Main\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/privacy-policy', [ContentController::class, 'privacyPolicy'])->name('privacy-policy');
 Route::get('/terms', [ContentController::class, 'terms'])->name('terms');
 Route::get('/brand/{brand}', [BrandController::class, 'show'])->name('product.show');
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 Route::get('/search/products', [SearchController::class, 'products'])
     ->name('search.products')

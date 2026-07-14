@@ -146,7 +146,7 @@ const filteredProducts = computed(() => {
                             <span>Delay</span>
                         </div>
                         <span
-                            v-html="product.description"
+                            v-safe-html="product.description"
                             class="text-muted-foreground"
                         ></span>
                     </div>

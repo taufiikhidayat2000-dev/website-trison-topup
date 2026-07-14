@@ -96,7 +96,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
                     <span v-else class="text-xs text-muted-foreground">-</span>
                 </template>
                 <template #description="{ row }">
-                    <span v-html="row.description"></span>
+                    <span v-safe-html="row.description"></span>
                 </template>
                 <template #products_count="{ row }">
                     {{ row.products_count ?? 0 }}
