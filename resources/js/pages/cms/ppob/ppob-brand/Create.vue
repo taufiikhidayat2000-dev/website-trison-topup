@@ -3,6 +3,7 @@ import { store } from '@/actions/App/Http/Controllers/Cms/PPOB/PPOBBrandControll
 import ImageUploadPreview from '@/components/ImageUploadPreview.vue';
 import InputDescription from '@/components/InputDescription.vue';
 import InputError from '@/components/InputError.vue';
+import ManualFieldsBuilder from '@/components/ManualFieldsBuilder.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,7 +16,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { useSwal } from '@/composables/useSwal';
-import { PPOBCategoryDataItem } from '@/types/cms/ppob';
+import { PPOBBrandManualField, PPOBCategoryDataItem } from '@/types/cms/ppob';
 import { Form } from '@inertiajs/vue3';
 import { Modal } from '@inertiaui/modal-vue';
 import { Plus, Save, Trash2 } from 'lucide-vue-next';
@@ -34,6 +35,8 @@ const description = ref<string>('');
 const settingsType = ref<string>('id');
 // Server list state
 const serverList = ref<string[]>([]);
+// Manual fields state (for the "manual" checkout type)
+const manualFields = ref<PPOBBrandManualField[]>([]);
 
 // Add server function
 const addServer = async () => {
@@ -163,7 +166,8 @@ const deleteServer = (index: number) => {
                 <div class="grid gap-2">
                     <Label for="logo">Image</Label>
                     <InputDescription>
-                        Upload the PPOB brand image (Max 5MB). Recommended size: 500x500 px (square).
+                        Upload the PPOB brand image (Max 5MB). Recommended size:
+                        500x500 px (square).
                     </InputDescription>
                     <ImageUploadPreview
                         input-id="image"
@@ -180,13 +184,17 @@ const deleteServer = (index: number) => {
                 <div class="grid gap-2">
                     <Label for="banner">Banner</Label>
                     <InputDescription>
-                        Upload the PPOB brand banner (Max 5MB). Recommended size: 1920x1080 px (ratio 16:9) — the most common banner format.
+                        Upload the PPOB brand banner (Max 5MB). Uses the same
+                        ratio as a Facebook Cover Photo (820x312 px, or 1640x624
+                        px for HD) — search "Facebook cover photo [game name]"
+                        or a Canva "Facebook Cover" template to find ready-made
+                        reference images that fit without cropping.
                     </InputDescription>
                     <ImageUploadPreview
                         input-id="banner"
                         input-name="banner"
                         label=""
-                        description="Upload your PPOB brand banner here. Recommended size: 1920x1080 px (ratio 16:9)."
+                        description="Upload your PPOB brand banner here. Same ratio as a Facebook Cover Photo: 820x312 px (or 1640x624 px HD)."
                         accept="image/*"
                         :max-size="5"
                         preview-height="200px"
@@ -267,12 +275,15 @@ const deleteServer = (index: number) => {
                         <SelectContent>
                             <SelectItem value="id">ID</SelectItem>
                             <SelectItem value="id+server">ID+Server</SelectItem>
+                            <SelectItem value="manual">
+                                Manual (Login Akun)
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                     <InputError :message="errors['settings.type']" />
                 </div>
 
-                <div class="grid gap-2">
+                <div class="grid gap-2" v-if="settingsType !== 'manual'">
                     <Label for="settings.label_id">Label ID</Label>
                     <InputDescription>
                         The label ID associated with this PPOB brand.
@@ -397,6 +408,17 @@ const deleteServer = (index: number) => {
                         </table>
                     </div>
                     <InputError :message="errors['settings.server_list']" />
+                </div>
+
+                <div class="grid gap-2" v-if="settingsType === 'manual'">
+                    <Label>Manual Fields</Label>
+                    <InputDescription>
+                        Define the manual fields customers must fill in at
+                        checkout to submit their game login data (e.g. email,
+                        password, nickname, server, login via).
+                    </InputDescription>
+                    <ManualFieldsBuilder v-model="manualFields" />
+                    <InputError :message="errors['settings.manual_fields']" />
                 </div>
 
                 <div class="grid gap-2">

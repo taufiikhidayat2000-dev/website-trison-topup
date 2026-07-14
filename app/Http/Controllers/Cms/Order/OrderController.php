@@ -136,6 +136,9 @@ class OrderController extends Controller
 
         $order->payment?->makeHidden('media');
 
+        // Decrypt manual checkout login credentials for admin fulfillment.
+        $order->submited = $order->decryptedSubmited();
+
         return inertia('cms/order/order/Show', [
             'order' => $order,
         ]);

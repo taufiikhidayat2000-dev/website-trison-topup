@@ -11,6 +11,14 @@ export interface PPOBCategoryDataItem {
     active_brands_count?: number;
 }
 
+export interface PPOBBrandManualField {
+    key: string;
+    label: string;
+    type: 'text' | 'email' | 'password' | 'select';
+    options?: string[];
+    required: boolean;
+}
+
 export interface PPOBBrandDataItem {
     id: number;
     p_p_o_b_category_id: number;
@@ -21,10 +29,11 @@ export interface PPOBBrandDataItem {
     featured: boolean;
     order: number;
     settings?: {
-        type?: 'id' | 'id+server';
+        type?: 'id' | 'id+server' | 'manual';
         label_id?: string;
         label_server?: string;
         servers?: string[];
+        manual_fields?: PPOBBrandManualField[];
     };
     image?: string;
     banner?: string;

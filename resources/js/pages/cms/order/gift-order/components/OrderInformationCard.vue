@@ -49,7 +49,7 @@ defineProps<{
         <Separator class="my-4" />
 
         <div class="grid grid-cols-2 gap-4">
-            <div>
+            <div v-if="order.brand?.settings?.type !== 'manual'">
                 <Label class="text-muted-foreground">Account ID / Server</Label>
                 <p class="font-mono font-medium">
                     {{ order.submited?.account_id || '-' }}
@@ -74,5 +74,28 @@ defineProps<{
                 </p>
             </div>
         </div>
+
+        <!-- Manual checkout login data (email/password/nickname/etc) -->
+        <template
+            v-if="
+                order.brand?.settings?.type === 'manual' &&
+                order.brand?.settings?.manual_fields?.length
+            "
+        >
+            <Separator class="my-4" />
+            <div class="grid grid-cols-2 gap-4">
+                <div
+                    v-for="field in order.brand.settings.manual_fields"
+                    :key="field.key"
+                >
+                    <Label class="text-muted-foreground">{{
+                        field.label
+                    }}</Label>
+                    <p class="font-mono font-medium">
+                        {{ order.submited?.[field.key] || '-' }}
+                    </p>
+                </div>
+            </div>
+        </template>
     </Card>
 </template>

@@ -160,7 +160,15 @@ const handleSearch = () => {
                                         {{ order.reference }}
                                     </td>
                                     <td class="px-4 py-3 text-muted-foreground">
-                                        {{ order.submited.account_id }}
+                                        {{
+                                            order.submited?.account_id ||
+                                            order.submited?.[
+                                                order.brand?.settings
+                                                    ?.manual_fields?.[0]?.key ??
+                                                    ''
+                                            ] ||
+                                            '-'
+                                        }}
                                     </td>
                                     <td
                                         class="px-4 py-3 font-medium text-foreground"

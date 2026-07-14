@@ -136,7 +136,7 @@ const rejectPayment = async (close: () => void) => {
                     </div>
 
                     <div class="grid grid-cols-2 gap-4 border-t pt-4">
-                        <div>
+                        <div v-if="order.brand?.settings?.type !== 'manual'">
                             <p class="text-xs text-muted-foreground">
                                 ID Akun
                                 {{
@@ -149,6 +149,22 @@ const rejectPayment = async (close: () => void) => {
                                     order.submited?.server_id
                                         ? `/ ${order.submited.server_id}`
                                         : ''
+                                }}
+                            </p>
+                        </div>
+                        <div v-else>
+                            <p class="text-xs text-muted-foreground">
+                                {{
+                                    order.brand?.settings?.manual_fields?.[0]
+                                        ?.label || 'Data Akun'
+                                }}
+                            </p>
+                            <p class="font-mono font-medium">
+                                {{
+                                    order.submited?.[
+                                        order.brand?.settings
+                                            ?.manual_fields?.[0]?.key ?? ''
+                                    ] || '-'
                                 }}
                             </p>
                         </div>

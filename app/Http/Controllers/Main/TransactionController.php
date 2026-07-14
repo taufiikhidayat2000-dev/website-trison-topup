@@ -227,6 +227,30 @@ class TransactionController extends Controller
             ];
         }
 
+        // Mask manual checkout fields (email/password/nickname/etc). Values
+        // that still look like Crypt ciphertext are never revealed to the
+        // customer (checked by shape via Order::looksEncrypted(), not by the
+        // brand's *current* field type - that can be edited/renamed after
+        // orders already exist); other fields are partially redacted like
+        // account_id/server_id above.
+        $manualFields = $order->brand?->settings['manual_fields'] ?? [];
+        if (! empty($manualFields) && is_array($order->submited)) {
+            $masked = $order->submited;
+
+            foreach ($manualFields as $field) {
+                $key = $field['key'] ?? null;
+                if (! $key || ! isset($masked[$key]) || ! is_string($masked[$key])) {
+                    continue;
+                }
+
+                $masked[$key] = Order::looksEncrypted($masked[$key])
+                    ? str_repeat('•', 8)
+                    : preg_replace('/.(?=.{2})/', '*', $masked[$key]);
+            }
+
+            $order->submited = $masked;
+        }
+
         return $order;
     }
 }

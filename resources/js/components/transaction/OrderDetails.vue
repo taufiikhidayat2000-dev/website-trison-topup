@@ -44,7 +44,10 @@ defineProps<{
             </div>
 
             <!-- Account Details -->
-            <div class="space-y-2 rounded-lg bg-muted/50 p-3">
+            <div
+                v-if="order.brand?.settings?.type !== 'manual'"
+                class="space-y-2 rounded-lg bg-muted/50 p-3"
+            >
                 <div>
                     <p class="text-xs text-muted-foreground">ID Akun</p>
                     <p class="font-medium text-foreground">
@@ -61,6 +64,24 @@ defineProps<{
                     <p class="text-xs text-muted-foreground">Username</p>
                     <p class="font-medium text-foreground">
                         {{ mlAccountNickname }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Manual checkout data (email/password/nickname/etc) -->
+            <div
+                v-else-if="order.brand?.settings?.manual_fields?.length"
+                class="space-y-2 rounded-lg bg-muted/50 p-3"
+            >
+                <div
+                    v-for="field in order.brand.settings.manual_fields"
+                    :key="field.key"
+                >
+                    <p class="text-xs text-muted-foreground">
+                        {{ field.label }}
+                    </p>
+                    <p class="font-medium text-foreground">
+                        {{ order.submited?.[field.key] || '-' }}
                     </p>
                 </div>
             </div>

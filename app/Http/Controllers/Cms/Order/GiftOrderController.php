@@ -184,7 +184,8 @@ class GiftOrderController extends Controller
         }
 
         // Load media admin_add_friend_proof user_confirm_friend_proof gift_send_proof
-        $submittedData = $order->submited;
+        // Decrypt manual checkout login credentials for admin fulfillment.
+        $submittedData = $order->decryptedSubmited();
         $submittedData['admin_add_friend_proof'] = $order->getFirstMediaUrl('admin_add_friend_proof');
         $submittedData['user_confirm_friend_proof'] = $order->getFirstMediaUrl('user_confirm_friend_proof');
         $submittedData['gift_send_proof'] = $order->getFirstMediaUrl('gift_send_proof');

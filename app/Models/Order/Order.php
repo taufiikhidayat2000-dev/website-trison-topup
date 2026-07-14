@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Crypt;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -132,6 +133,56 @@ class Order extends Model implements HasMedia
     public function isEligibleForReview(): bool
     {
         return $this->isDelivered() && ! $this->review()->exists();
+    }
+
+    /**
+     * Decrypt manual-checkout password fields for admin display. Password
+     * values are encrypted at rest (see StoreTransactionRequest) so the
+     * game login credentials aren't stored in plaintext; only CMS order
+     * views should call this, never the customer-facing transaction pages.
+     *
+     * Detects ciphertext by its own shape (self-describing) rather than by
+     * cross-referencing the brand's *current* manual_fields definition -
+     * that definition can be edited/renamed after orders already exist, in
+     * which case matching by field type would leave old ciphertext
+     * undecryptable or misidentify a plain field as encrypted.
+     */
+    public function decryptedSubmited(): array
+    {
+        $submited = $this->submited ?? [];
+
+        foreach ($submited as $key => $value) {
+            if (! is_string($value) || ! static::looksEncrypted($value)) {
+                continue;
+            }
+
+            try {
+                $submited[$key] = Crypt::decryptString($value);
+            } catch (\Exception) {
+                // Leave the raw value as-is if it can't be decrypted.
+            }
+        }
+
+        return $submited;
+    }
+
+    /**
+     * Whether a string looks like a Laravel Crypt-encrypted payload
+     * (base64-encoded JSON with iv/value/mac), without actually decrypting
+     * it. Shared by decryptedSubmited() and TransactionController::maskData()
+     * so both sides agree on what counts as "sensitive" independently of any
+     * mutable field configuration.
+     */
+    public static function looksEncrypted(string $value): bool
+    {
+        $decoded = base64_decode($value, true);
+        if ($decoded === false) {
+            return false;
+        }
+
+        $payload = json_decode($decoded, true);
+
+        return is_array($payload) && isset($payload['iv'], $payload['value'], $payload['mac']);
     }
 
     #[Scope]

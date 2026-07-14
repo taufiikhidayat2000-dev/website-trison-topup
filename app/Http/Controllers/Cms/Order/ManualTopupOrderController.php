@@ -182,7 +182,8 @@ class ManualTopupOrderController extends Controller
         }
 
         // Load media gift_send_proof
-        $submittedData = $order->submited;
+        // Decrypt manual checkout login credentials for admin fulfillment.
+        $submittedData = $order->decryptedSubmited();
         $submittedData['gift_send_proof'] = $order->getFirstMediaUrl('gift_send_proof');
         $order->submited = $submittedData;
 

@@ -3,6 +3,7 @@ import { store } from '@/actions/App/Http/Controllers/Main/TransactionController
 import AccountDataForm from '@/components/brand-detail/AccountDataForm.vue';
 import BrandBanner from '@/components/brand-detail/BrandBanner.vue';
 import ContactDetailsForm from '@/components/brand-detail/ContactDetailsForm.vue';
+import ManualLoginForm from '@/components/brand-detail/ManualLoginForm.vue';
 import OrderSummary from '@/components/brand-detail/OrderSummary.vue';
 import PaymentMethodSelection from '@/components/brand-detail/PaymentMethodSelection.vue';
 import ProductSelection from '@/components/brand-detail/ProductSelection.vue';
@@ -41,6 +42,7 @@ const form = useForm({
     type: props.brand.settings?.type || 'id',
     account_id: '', // 36688862
     server_id: '', // 2052
+    manual_fields: {} as Record<string, string>,
     product_id: null as number | null,
     voucher_code: null as string | null,
     email: user?.email || '',
@@ -58,6 +60,11 @@ const discountAmount = ref(0);
 const abortController = ref<AbortController | null>(null);
 
 const checkGameAccount = useDebounceFn(async () => {
+    // Only ID-based checkout brands support automatic account resolution
+    if (inputType.value === 'manual') {
+        return;
+    }
+
     // Check if brand is mobile legends
     if (!props.brand.name.toLowerCase().includes('mobile legend')) {
         return;
@@ -132,6 +139,7 @@ const labelServer = computed(
     () => props.brand.settings?.label_server || 'Server',
 );
 const serverOptions = computed(() => props.brand.settings?.servers || []);
+const manualFields = computed(() => props.brand.settings?.manual_fields || []);
 
 const selectedProductData = computed(() => {
     if (!form.product_id || !props.brand.products) return null;
@@ -330,20 +338,34 @@ const handleVoucherRemoved = () => {
 
 const handleCheckout = () => {
     // Validation
-    if (!form.account_id) {
-        toast.fire({
-            icon: 'error',
-            title: `Mohon isi ${labelId.value}`,
-        });
-        return;
-    }
+    if (inputType.value === 'manual') {
+        const missingField = manualFields.value.find(
+            (field) => field.required && !form.manual_fields[field.key],
+        );
 
-    if (inputType.value === 'id+server' && !form.server_id) {
-        toast.fire({
-            icon: 'error',
-            title: `Mohon isi ${labelServer.value}`,
-        });
-        return;
+        if (missingField) {
+            toast.fire({
+                icon: 'error',
+                title: `Mohon isi ${missingField.label}`,
+            });
+            return;
+        }
+    } else {
+        if (!form.account_id) {
+            toast.fire({
+                icon: 'error',
+                title: `Mohon isi ${labelId.value}`,
+            });
+            return;
+        }
+
+        if (inputType.value === 'id+server' && !form.server_id) {
+            toast.fire({
+                icon: 'error',
+                title: `Mohon isi ${labelServer.value}`,
+            });
+            return;
+        }
     }
 
     if (!form.product_id) {
@@ -457,7 +479,14 @@ const handleCheckout = () => {
                     <!-- Left Column - Form -->
                     <div class="space-y-6 lg:col-span-2">
                         <!-- Step 1: Account Data -->
+                        <ManualLoginForm
+                            v-if="inputType === 'manual'"
+                            :fields="manualFields"
+                            v-model="form.manual_fields"
+                            :form-errors="form.errors"
+                        />
                         <AccountDataForm
+                            v-else
                             :input-type="inputType"
                             :label-id="labelId"
                             :label-server="labelServer"

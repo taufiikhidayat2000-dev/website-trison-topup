@@ -30,7 +30,8 @@ defineProps<{
         <CardHeader>
             <CardTitle>In Progress (Waiting 7 Days)</CardTitle>
             <CardDescription>
-                Orders where friend request was sent but waiting for 7 day delay.
+                Orders where friend request was sent but waiting for 7 day
+                delay.
             </CardDescription>
         </CardHeader>
         <CardContent class="flex-1">
@@ -47,16 +48,33 @@ defineProps<{
                         <TableCell class="font-medium">
                             <div class="flex flex-col">
                                 <span>{{ order.reference }}</span>
-                                <span class="text-xs text-muted-foreground">
+                                <span
+                                    v-if="
+                                        order.brand?.settings?.type !== 'manual'
+                                    "
+                                    class="text-xs text-muted-foreground"
+                                >
                                     {{ order.submited?.account_id }}
                                     ({{ order.submited?.server_id }})
+                                </span>
+                                <span
+                                    v-else
+                                    class="text-xs text-muted-foreground"
+                                >
+                                    {{
+                                        order.submited?.[
+                                            order.brand?.settings
+                                                ?.manual_fields?.[0]?.key ?? ''
+                                        ] || '-'
+                                    }}
                                 </span>
                             </div>
                         </TableCell>
                         <TableCell>
                             <div
                                 v-if="
-                                    order.submited?.user_confirm_friend_timestamp
+                                    order.submited
+                                        ?.user_confirm_friend_timestamp
                                 "
                             >
                                 <span

@@ -136,7 +136,7 @@ const rejectPayment = async (close: () => void) => {
                     </div>
 
                     <div class="grid grid-cols-2 gap-4 border-t pt-4">
-                        <div>
+                        <div v-if="order.brand?.settings?.type !== 'manual'">
                             <p class="text-xs text-muted-foreground">
                                 ID Akun
                                 {{ order.submited.server_id ? '/ Server' : '' }}
@@ -158,6 +158,41 @@ const rejectPayment = async (close: () => void) => {
                             <p class="text-sm text-muted-foreground">
                                 {{ order.phone }}
                             </p>
+                        </div>
+                    </div>
+
+                    <!-- Manual checkout login data (email/password/nickname/etc) -->
+                    <div
+                        v-if="
+                            order.brand?.settings?.type === 'manual' &&
+                            order.brand?.settings?.manual_fields?.length
+                        "
+                        class="grid grid-cols-2 gap-4 border-t pt-4"
+                    >
+                        <div
+                            v-for="field in order.brand.settings.manual_fields"
+                            :key="field.key"
+                        >
+                            <p class="text-xs text-muted-foreground">
+                                {{ field.label }}
+                            </p>
+                            <div class="flex items-center gap-2">
+                                <p class="font-mono font-medium">
+                                    {{ order.submited?.[field.key] || '-' }}
+                                </p>
+                                <button
+                                    v-if="order.submited?.[field.key]"
+                                    type="button"
+                                    class="text-muted-foreground hover:text-foreground"
+                                    @click="
+                                        copyToClipboard(
+                                            order.submited[field.key],
+                                        )
+                                    "
+                                >
+                                    <Copy class="h-3.5 w-3.5" />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
