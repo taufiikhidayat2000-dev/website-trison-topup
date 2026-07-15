@@ -20,6 +20,7 @@ class PPOBBrand extends Model implements HasMedia
         'provider',
         'slug',
         'description',
+        'cara_topup',
         'featured',
         'order',
         'settings',

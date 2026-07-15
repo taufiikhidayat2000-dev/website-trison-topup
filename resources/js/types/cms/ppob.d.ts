@@ -26,6 +26,7 @@ export interface PPOBBrandDataItem {
     provider: string;
     slug: string;
     description?: string;
+    cara_topup?: string;
     featured: boolean;
     order: number;
     settings?: {

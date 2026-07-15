@@ -2,6 +2,7 @@
 import { store } from '@/actions/App/Http/Controllers/Main/TransactionController';
 import AccountDataForm from '@/components/brand-detail/AccountDataForm.vue';
 import BrandBanner from '@/components/brand-detail/BrandBanner.vue';
+import BrandInfoCard from '@/components/brand-detail/BrandInfoCard.vue';
 import ContactDetailsForm from '@/components/brand-detail/ContactDetailsForm.vue';
 import ManualLoginForm from '@/components/brand-detail/ManualLoginForm.vue';
 import OrderSummary from '@/components/brand-detail/OrderSummary.vue';
@@ -478,6 +479,12 @@ const handleCheckout = () => {
                 <div class="grid gap-6 lg:grid-cols-3">
                     <!-- Left Column - Form -->
                     <div class="space-y-6 lg:col-span-2">
+                        <!-- Brand Info: Description & Cara Topup -->
+                        <BrandInfoCard
+                            :description="brand.description"
+                            :cara-topup="brand.cara_topup"
+                        />
+
                         <!-- Step 1: Account Data -->
                         <ManualLoginForm
                             v-if="inputType === 'manual'"
@@ -523,20 +530,6 @@ const handleCheckout = () => {
                             :user-balance="userBalance"
                             :total-amount="totalAmount"
                         />
-
-                        <!-- Brand Description -->
-                        <div
-                            v-if="brand.description"
-                            class="rounded-lg border bg-card p-4 text-card-foreground"
-                        >
-                            <h2 class="mb-2 text-lg font-semibold">
-                                Deskripsi
-                            </h2>
-                            <div
-                                v-safe-html="brand.description"
-                                class="text-sm"
-                            ></div>
-                        </div>
                     </div>
 
                     <!-- Right Column - Summary -->

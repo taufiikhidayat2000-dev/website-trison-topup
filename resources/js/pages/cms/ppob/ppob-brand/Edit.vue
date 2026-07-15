@@ -35,6 +35,8 @@ const { toast } = useSwal();
 
 // Description state
 const description = ref<string>(props.brand.description || '');
+// Cara topup (how to top up) state
+const caraTopup = ref<string>(props.brand.cara_topup || '');
 
 // Settings type state
 const settingsType = ref<string>(props.brand.settings?.type || 'id');
@@ -163,7 +165,7 @@ const deleteServer = (index: number) => {
                     <InputDescription>
                         A brief description of the PPOB brand.
                     </InputDescription>
-                    <Input
+                    <input
                         id="description"
                         name="description"
                         type="hidden"
@@ -178,6 +180,28 @@ const deleteServer = (index: number) => {
                         "
                     />
                     <InputError :message="errors.description" />
+                </div>
+
+                <div class="grid gap-2">
+                    <Label for="cara_topup">Cara Topup</Label>
+                    <InputDescription>
+                        Step-by-step top up instructions for this PPOB brand.
+                    </InputDescription>
+                    <input
+                        id="cara_topup"
+                        name="cara_topup"
+                        type="hidden"
+                        :value="caraTopup"
+                    />
+                    <QuilTextEditor
+                        :content="caraTopup"
+                        @update:content="
+                            (value) => {
+                                caraTopup = value;
+                            }
+                        "
+                    />
+                    <InputError :message="errors.cara_topup" />
                 </div>
 
                 <div class="grid gap-2">
