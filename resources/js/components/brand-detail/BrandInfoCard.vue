@@ -1,4 +1,8 @@
 <script setup lang="ts">
+// Quill renders list numbers/bullets as CSS counter content scoped to
+// `.ql-editor`, not as real text — without this stylesheet, saved
+// ordered/bullet lists render with no markers at all.
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { BookOpenText, Info } from 'lucide-vue-next';
 
 defineProps<{
@@ -21,7 +25,7 @@ defineProps<{
             </div>
             <div
                 v-safe-html="description"
-                class="prose prose-sm max-w-none text-sm text-muted-foreground"
+                class="ql-editor h-auto! overflow-visible! p-0! text-sm text-muted-foreground"
             ></div>
         </div>
 
@@ -39,7 +43,7 @@ defineProps<{
             </div>
             <div
                 v-safe-html="caraTopup"
-                class="prose prose-sm max-w-none text-sm text-muted-foreground"
+                class="ql-editor h-auto! overflow-visible! p-0! text-sm text-muted-foreground"
             ></div>
         </div>
     </div>
