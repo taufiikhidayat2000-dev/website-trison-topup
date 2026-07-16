@@ -19,7 +19,7 @@ class HomeController extends Controller
         // Filter category
         $category = null;
         if ($request->has('category')) {
-            $category = PPOBCategory::where('slug', $request->query('category'))->first();
+            $category = PPOBCategory::where('slug', $request->query('category'))->where('status', true)->first();
         }
 
         $search = $request->query('search');
@@ -47,6 +47,7 @@ class HomeController extends Controller
 
         return inertia()->render('main/Home', [
             'search' => $search,
+            'category' => $category?->slug,
             'active_flash_sale' => $activeFlashSale,
             'sliders' => Slider::query()
                 ->with('media')

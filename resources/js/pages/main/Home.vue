@@ -18,6 +18,7 @@ defineProps<{
     categories: PPOBCategoryDataItem[];
     active_flash_sale: any | null;
     search?: string | null;
+    category?: string | null;
 }>();
 
 const page = usePage();
@@ -84,29 +85,54 @@ const appUrl = page.props.app_url;
                         </h2>
                     </div>
                     <div class="flex gap-3 overflow-x-auto pb-2">
+                        <Link :href="index().url" preserve-scroll>
+                            <button
+                                class="flex min-w-[140px] flex-col items-center gap-2 rounded-lg border p-4 transition-all hover:scale-105 hover:shadow-md"
+                                :class="
+                                    !category
+                                        ? 'border-primary bg-primary/10 hover:border-primary'
+                                        : 'border-border/50 bg-card hover:border-primary/50'
+                                "
+                            >
+                                <span class="text-3xl">🗂️</span>
+                                <span
+                                    class="text-sm font-semibold text-foreground"
+                                >
+                                    Semua
+                                </span>
+                                <span class="text-xs text-muted-foreground">
+                                    Semua produk
+                                </span>
+                            </button>
+                        </Link>
                         <Link
-                            v-for="category in categories"
-                            :href="index().url + '?category=' + category.slug"
-                            :key="category.id"
+                            v-for="cat in categories"
+                            :href="index().url + '?category=' + cat.slug"
+                            :key="cat.id"
                             preserve-scroll
                         >
                             <button
-                                class="flex min-w-[140px] flex-col items-center gap-2 rounded-lg border border-border/50 bg-card p-4 transition-all hover:scale-105 hover:border-primary/50 hover:shadow-md"
+                                class="flex min-w-[140px] flex-col items-center gap-2 rounded-lg border p-4 transition-all hover:scale-105 hover:shadow-md"
+                                :class="
+                                    category === cat.slug
+                                        ? 'border-primary bg-primary/10 hover:border-primary'
+                                        : 'border-border/50 bg-card hover:border-primary/50'
+                                "
                             >
                                 <img
-                                    v-if="category.image"
-                                    :src="category.image"
-                                    alt="category.name"
+                                    v-if="cat.image"
+                                    :src="cat.image"
+                                    alt="cat.name"
                                     class="h-12 w-12 object-contain"
                                 />
                                 <span class="text-3xl" v-else> 🎮 </span>
                                 <span
                                     class="text-sm font-semibold text-foreground"
                                 >
-                                    {{ category.name }}
+                                    {{ cat.name }}
                                 </span>
                                 <span class="text-xs text-muted-foreground">
-                                    {{ category.active_brands_count }} produk
+                                    {{ cat.active_brands_count }} produk
                                 </span>
                             </button>
                         </Link>
