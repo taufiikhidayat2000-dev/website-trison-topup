@@ -8,14 +8,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import useNewOrdersQuery from '@/composables/query/useNewOrdersQuery';
 import { useFilter } from '@/composables/useFilter';
+import useOrderAlert from '@/composables/useOrderAlert';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency } from '@/lib/utils';
 import { PaginationItem, type BreadcrumbItem } from '@/types';
 import { OrderDataItem } from '@/types/cms/main';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import dayjs from 'dayjs';
+import { Bell, BellOff, BellRing } from 'lucide-vue-next';
 import { Eye } from 'lucide-vue-next';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = defineProps<{
     data: PaginationItem<OrderDataItem>;
@@ -28,6 +32,7 @@ const props = defineProps<{
     paymentStatusFilter?: string[];
     dateFrom?: string;
     dateTo?: string;
+    lastOrderId: number;
 }>();
 
 const { updateParams } = useFilter();
@@ -118,13 +123,96 @@ const detailUrl = (row: OrderDataItem) => {
 
     return showTopupOrder({ order: row.reference }).url;
 };
+
+// New-order alert: sound + Windows/desktop notification (see
+// resources/js/composables/useOrderAlert.ts and useNewOrdersQuery.ts).
+const lastSeenOrderId = ref(props.lastOrderId ?? 0);
+const {
+    soundEnabled,
+    notificationPermission,
+    toggleSound,
+    unlockAudio,
+    playChime,
+    requestNotificationPermission,
+    showDesktopNotification,
+} = useOrderAlert();
+
+const { data: newOrdersPoll } = useNewOrdersQuery(lastSeenOrderId);
+
+watch(newOrdersPoll, (result) => {
+    if (!result || result.orders.length === 0) return;
+
+    for (const order of result.orders) {
+        playChime();
+        showDesktopNotification(
+            order.id,
+            'Order Baru Masuk',
+            `${order.name} — ${typeLabel[order.order_type] ?? order.order_type} — ${formatCurrency(order.total_amount)}`,
+            () => router.visit(detailUrl(order as unknown as OrderDataItem)),
+        );
+    }
+
+    lastSeenOrderId.value = result.last_id;
+
+    // Refresh the table in place so the new order shows up without losing
+    // the admin's current filters/scroll position.
+    router.reload({ only: ['data'] });
+});
+
+const unlockAudioOnce = () => {
+    unlockAudio();
+    document.removeEventListener('click', unlockAudioOnce);
+};
+
+onMounted(() => {
+    document.addEventListener('click', unlockAudioOnce);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('click', unlockAudioOnce);
+});
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
         <Head :title="title" />
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <Heading :title="title" :description="description" />
+            <div class="flex flex-wrap items-start justify-between gap-4">
+                <Heading :title="title" :description="description" />
+
+                <div class="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        :title="
+                            soundEnabled
+                                ? 'Matikan notifikasi suara'
+                                : 'Nyalakan notifikasi suara'
+                        "
+                        @click="toggleSound"
+                    >
+                        <Bell v-if="soundEnabled" class="h-4 w-4" />
+                        <BellOff v-else class="h-4 w-4" />
+                        {{ soundEnabled ? 'Suara Aktif' : 'Suara Nonaktif' }}
+                    </Button>
+
+                    <Button
+                        v-if="notificationPermission === 'default'"
+                        variant="outline"
+                        size="sm"
+                        @click="requestNotificationPermission"
+                    >
+                        <BellRing class="h-4 w-4" />
+                        Aktifkan Notifikasi Windows
+                    </Button>
+                    <span
+                        v-else-if="notificationPermission === 'denied'"
+                        class="text-xs text-muted-foreground"
+                    >
+                        Notifikasi Windows diblokir browser
+                    </span>
+                </div>
+            </div>
 
             <!-- Type Tabs -->
             <div class="flex flex-wrap items-center gap-2">

@@ -13,6 +13,7 @@ Route::group([
 ], function () {
     // All Orders (unified Topup + Gift + Manual Topup view)
     Route::get('all-orders', AllOrderController::class)->name('all-orders.index');
+    Route::get('all-orders/poll-new', [AllOrderController::class, 'pollNew'])->name('all-orders.poll-new');
 
     // Topup Orders
     Route::get('topup-orders', [OrderController::class, 'index'])->name('orders.index');

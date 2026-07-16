@@ -92,12 +92,7 @@ class AllOrderController extends Controller
 
         // Normalize: attach a unified order_type + hydrate manual payment proof image
         $model->map(function ($item) {
-            $item->order_type = match (true) {
-                in_array($item->product?->provider, ['digiflazz', 'lapakgaming'], true) => 'topup',
-                $item->product?->provider === 'gift' => 'gift',
-                $item->product?->provider === 'manual_topup' => 'manual',
-                default => 'unknown',
-            };
+            $item->order_type = $this->resolveOrderType($item->product?->provider);
 
             if ($item->payment?->driver === 'manual') {
                 $item->payment->image = $item->payment->getFirstMediaUrl('image');
@@ -119,6 +114,58 @@ class AllOrderController extends Controller
             'paymentStatusFilter' => $paymentStatusFilter,
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
+            // Wrapped in a Closure so it's skipped entirely (never queried) on
+            // partial reloads that don't request it, e.g. the `only: ['data']`
+            // reload triggered by the new-order poll - Inertia strips
+            // non-requested keys from the props array before invoking any
+            // Closure-valued props.
+            'lastOrderId' => fn () => (int) (Order::query()->withoutArchive()->max('id') ?? 0),
         ]);
+    }
+
+    /**
+     * Lightweight polling endpoint used by the All Orders page to detect
+     * newly-created orders (any type/status, ignoring the page's current
+     * filters) so the admin can be alerted with a sound/desktop notification
+     * without a full page reload.
+     */
+    public function pollNew(Request $request)
+    {
+        Gate::authorize('view'.$this->resource);
+
+        $afterId = (int) $request->query('after_id', 0);
+
+        $orders = Order::with('product:id,name,provider')
+            ->withoutArchive()
+            ->where('id', '>', $afterId)
+            ->orderBy('id')
+            ->limit(50)
+            ->get(['id', 'reference', 'name', 'p_p_o_b_product_id', 'total_amount', 'payment_status', 'created_at']);
+
+        $orders->each(function ($order) {
+            $order->order_type = $this->resolveOrderType($order->product?->provider);
+            $order->makeHidden(['product', 'p_p_o_b_product_id']);
+        });
+
+        return response()->json([
+            'orders' => $orders,
+            'last_id' => $orders->max('id') ?? $afterId,
+        ]);
+    }
+
+    /**
+     * Classify an order's unified type from its product's provider, using
+     * TYPE_PROVIDERS as the single source of truth (shared by the type
+     * filter, the listing, and the poll endpoint).
+     */
+    private function resolveOrderType(?string $provider): string
+    {
+        foreach (self::TYPE_PROVIDERS as $type => $providers) {
+            if (in_array($provider, $providers, true)) {
+                return $type;
+            }
+        }
+
+        return 'unknown';
     }
 }
