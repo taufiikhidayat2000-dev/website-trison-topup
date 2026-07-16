@@ -77,6 +77,7 @@ export interface PPOBProductDataItem {
     brand?: PPOBBrandDataItem;
     product_category?: PPOBProductCategoryDataItem;
     flash_price?: number;
+    flash_original_price?: number;
     flash_discount_percent?: number;
     flash_remaining_stock?: number;
 }

@@ -33,9 +33,12 @@ class BrandController extends Controller
 
             $flashSaleProduct = $flashSaleProducts->get($product->id);
             if ($flashSaleProduct) {
+                $displayOriginalPrice = $flashSaleProduct->original_price ?: $product->sell_price;
+
                 $product->flash_price = $flashSaleProduct->flash_price;
+                $product->flash_original_price = $displayOriginalPrice;
                 $product->flash_discount_percent = $flashSaleProduct->discount_percent
-                    ?? round((1 - $flashSaleProduct->flash_price / $product->sell_price) * 100);
+                    ?? round((1 - $flashSaleProduct->flash_price / $displayOriginalPrice) * 100);
                 $product->flash_remaining_stock = $flashSaleProduct->remaining_stock;
             }
         });

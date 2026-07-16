@@ -19,6 +19,7 @@ class AttachFlashSaleProductsRequest extends FormRequest
             'product_ids.*' => 'integer|exists:p_p_o_b_products,id',
             'pricing_type' => 'required|string|in:percent,manual',
             'discount_percent' => 'required_if:pricing_type,percent|numeric|between:0,100',
+            'original_price' => 'nullable|numeric|min:1',
             'flash_price' => 'required_if:pricing_type,manual',
             'flash_stock' => 'required|integer|min:1',
         ];

@@ -9,6 +9,7 @@ const props = defineProps<{
     flashSaleProduct: {
         id: number;
         flash_price: number;
+        original_price: number | null;
         discount_percent: number | null;
         flash_stock: number;
         sold: number;
@@ -45,7 +46,10 @@ const isSoldOut = computed(() => props.flashSaleProduct.status === 'sold_out');
                     :alt="flashSaleProduct.product.name"
                     class="h-full w-full object-cover"
                 />
-                <ShoppingBag v-else class="h-5 w-5 text-muted-foreground opacity-30" />
+                <ShoppingBag
+                    v-else
+                    class="h-5 w-5 text-muted-foreground opacity-30"
+                />
             </div>
             <h3 class="line-clamp-2 text-xs font-semibold text-foreground">
                 {{ flashSaleProduct.product.name }}
@@ -57,10 +61,19 @@ const isSoldOut = computed(() => props.flashSaleProduct.status === 'sold_out');
                 v-if="!isSoldOut"
                 class="block text-[11px] text-muted-foreground line-through"
             >
-                {{ formatCurrency(flashSaleProduct.product.sell_price) }}
+                {{
+                    formatCurrency(
+                        flashSaleProduct.original_price ??
+                            flashSaleProduct.product.sell_price,
+                    )
+                }}
             </span>
             <span class="block text-sm font-bold text-primary">
-                {{ isSoldOut ? 'Habis' : formatCurrency(flashSaleProduct.flash_price) }}
+                {{
+                    isSoldOut
+                        ? 'Habis'
+                        : formatCurrency(flashSaleProduct.flash_price)
+                }}
             </span>
         </div>
     </Link>

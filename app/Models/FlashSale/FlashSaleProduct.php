@@ -13,6 +13,7 @@ class FlashSaleProduct extends Model
         'p_p_o_b_product_id',
         'pricing_type',
         'discount_percent',
+        'original_price',
         'flash_price',
         'flash_stock',
         'sold',
@@ -23,6 +24,7 @@ class FlashSaleProduct extends Model
     {
         return [
             'discount_percent' => 'decimal:2',
+            'original_price' => 'integer',
             'flash_price' => 'integer',
             'flash_stock' => 'integer',
             'sold' => 'integer',

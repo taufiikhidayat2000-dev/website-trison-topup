@@ -17,8 +17,14 @@ const emit = defineEmits<{
 const categories = computed(() => {
     const seen = new Map<number, string>();
     for (const product of props.products) {
-        if (product.product_category && !seen.has(product.product_category.id)) {
-            seen.set(product.product_category.id, product.product_category.name);
+        if (
+            product.product_category &&
+            !seen.has(product.product_category.id)
+        ) {
+            seen.set(
+                product.product_category.id,
+                product.product_category.name,
+            );
         }
     }
     return Array.from(seen, ([id, name]) => ({ id, name }));
@@ -32,7 +38,8 @@ const filteredProducts = computed(() => {
         return props.products;
     }
     return props.products.filter(
-        (product) => product.p_p_o_b_product_category_id === activeCategory.value,
+        (product) =>
+            product.p_p_o_b_product_category_id === activeCategory.value,
     );
 });
 </script>
@@ -49,10 +56,7 @@ const filteredProducts = computed(() => {
             Pilih Produk
         </h2>
 
-        <div
-            v-if="categories.length > 0"
-            class="mb-4 flex flex-wrap gap-2"
-        >
+        <div v-if="categories.length > 0" class="mb-4 flex flex-wrap gap-2">
             <button
                 type="button"
                 class="rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors"
@@ -96,7 +100,9 @@ const filteredProducts = computed(() => {
                 "
                 @click="emit('update:selectedProduct', product.id)"
             >
-                <div class="flex items-start justify-between gap-2 pt-4 pl-4 pr-3">
+                <div
+                    class="flex items-start justify-between gap-2 pt-4 pr-3 pl-4"
+                >
                     <span class="text-sm font-semibold text-foreground">
                         {{ product.name }}
                     </span>
@@ -124,12 +130,22 @@ const filteredProducts = computed(() => {
                                 v-if="product.flash_price != null"
                                 class="block text-xs font-medium text-muted-foreground line-through"
                             >
-                                {{ formatCurrency(product.sell_price) }}
+                                {{
+                                    formatCurrency(
+                                        product.flash_original_price ??
+                                            product.sell_price,
+                                    )
+                                }}
                             </span>
                             <span
                                 class="flex items-center text-[14px] font-semibold text-primary md:text-[16px]"
                             >
-                                {{ formatCurrency(product.flash_price ?? product.sell_price) }}</span
+                                {{
+                                    formatCurrency(
+                                        product.flash_price ??
+                                            product.sell_price,
+                                    )
+                                }}</span
                             >
                         </div>
                     </div>
