@@ -43,6 +43,7 @@ class SaveSettingRequest extends FormRequest
             'value.maintenance_title' => 'nullable|string',
             'value.maintenance_description' => 'nullable|string',
             'value.maintenance_image' => 'nullable|image:allow_svg|max:2048',
+            'value.reseller_discount_percent' => 'nullable|numeric|min:0|max:100',
         ];
     }
 }

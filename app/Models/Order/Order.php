@@ -9,6 +9,7 @@ use App\Models\FlashSale\FlashSaleUse;
 use App\Models\Payment\Payment;
 use App\Models\PPOB\PPOBBrand;
 use App\Models\PPOB\PPOBProduct;
+use App\Models\Reseller\ResellerPriceUse;
 use App\Models\Review\Review;
 use App\Models\User;
 use App\Models\Voucher\VoucherUse;
@@ -97,6 +98,11 @@ class Order extends Model implements HasMedia
     public function flashSaleUse()
     {
         return $this->morphOne(FlashSaleUse::class, 'usable');
+    }
+
+    public function resellerPriceUse()
+    {
+        return $this->morphOne(ResellerPriceUse::class, 'usable');
     }
 
     public function flashSale()

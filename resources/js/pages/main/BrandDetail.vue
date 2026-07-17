@@ -292,6 +292,7 @@ const totalAmount = computed(() => {
 
     const basePrice =
         selectedProductData.value.flash_price ??
+        selectedProductData.value.reseller_price ??
         selectedProductData.value.sell_price;
     const priceAfterDiscount = Math.max(0, basePrice - discountAmount.value);
 

@@ -65,6 +65,7 @@ const checkVoucher = async () => {
             voucher_code: voucherCode.value,
             amount:
                 props.selectedProduct.flash_price ??
+                props.selectedProduct.reseller_price ??
                 props.selectedProduct.sell_price,
         });
 
@@ -199,7 +200,10 @@ watch(
                     <span class="text-muted-foreground">Harga:</span>
                     <span class="text-right font-medium text-foreground">
                         <span
-                            v-if="selectedProduct.flash_price != null"
+                            v-if="
+                                selectedProduct.flash_price != null ||
+                                selectedProduct.reseller_price != null
+                            "
                             class="mr-1 text-xs text-muted-foreground line-through"
                         >
                             {{ formatCurrency(selectedProduct.sell_price) }}
@@ -207,9 +211,19 @@ watch(
                         {{
                             formatCurrency(
                                 selectedProduct.flash_price ??
+                                    selectedProduct.reseller_price ??
                                     selectedProduct.sell_price,
                             )
                         }}
+                        <span
+                            v-if="
+                                selectedProduct.flash_price == null &&
+                                selectedProduct.reseller_price != null
+                            "
+                            class="ml-1 text-[10px] font-semibold text-emerald-600"
+                        >
+                            (Harga Reseller)
+                        </span>
                     </span>
                 </div>
 
@@ -247,6 +261,7 @@ watch(
                                     totalAmount +
                                         discountAmount -
                                         (selectedProduct.flash_price ??
+                                            selectedProduct.reseller_price ??
                                             selectedProduct.sell_price),
                                 ),
                             )

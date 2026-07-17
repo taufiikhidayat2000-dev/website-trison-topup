@@ -84,6 +84,11 @@ Jika Anda memiliki pertanyaan lebih lanjut, silakan hubungi kami di {cs_link}. K
                     // Primary automatic payment gateway. The other one is used
                     // automatically as a fallback if this one fails.
                     'payment_gateway' => 'linkqu', // linkqu/midtrans
+                    // Flat percentage discount off sell_price for users with the
+                    // "reseller" role. Computed on the fly at checkout, never
+                    // stored per-product, so it never goes stale when sell_price
+                    // changes (see App\Actions\Reseller\ResolveResellerPriceAction).
+                    'reseller_discount_percent' => 2,
                     'providers' => [
                         'digiflazz' => true,
                         'gift' => true,

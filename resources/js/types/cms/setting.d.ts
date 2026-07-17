@@ -26,6 +26,7 @@ export interface SettingValue {
     maintenance_title?: string;
     maintenance_description?: string;
     maintenance_image?: string;
+    reseller_discount_percent?: number;
 }
 
 export interface Setting {

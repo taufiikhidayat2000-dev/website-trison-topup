@@ -59,6 +59,29 @@ defineProps<{
                 />
                 <InputError :message="errors['value.cs']" />
             </div>
+
+            <div class="grid gap-2">
+                <Label for="reseller_discount_percent"
+                    >Diskon Reseller (%)</Label
+                >
+                <Input
+                    id="reseller_discount_percent"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    name="value[reseller_discount_percent]"
+                    :default-value="setting?.reseller_discount_percent ?? 2"
+                    placeholder="2"
+                />
+                <p class="text-xs text-muted-foreground">
+                    Persentase diskon dari harga jual untuk user dengan role
+                    reseller. Dihitung otomatis saat checkout.
+                </p>
+                <InputError
+                    :message="errors['value.reseller_discount_percent']"
+                />
+            </div>
         </div>
 
         <div class="grid gap-2">

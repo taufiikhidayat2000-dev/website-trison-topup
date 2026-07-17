@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Models\Order\Order;
+use App\Models\Reseller\ResellerApplication;
 use App\Models\Wallet\BalanceMutation;
 use App\Models\Wallet\Deposit;
 use Database\Factories\UserFactory;
@@ -90,6 +91,12 @@ class User extends Authenticatable implements HasMedia
         return $this->hasRole('user');
     }
 
+    #[Scope]
+    public function isReseller()
+    {
+        return $this->hasRole('reseller');
+    }
+
     public function orders()
     {
         return $this->hasMany(Order::class);
@@ -103,5 +110,10 @@ class User extends Authenticatable implements HasMedia
     public function deposits()
     {
         return $this->hasMany(Deposit::class);
+    }
+
+    public function resellerApplications()
+    {
+        return $this->hasMany(ResellerApplication::class);
     }
 }

@@ -3,11 +3,13 @@
 namespace App\Actions\Main;
 
 use App\Actions\FlashSale\ResolveFlashSalePriceAction;
+use App\Actions\Reseller\ResolveResellerPriceAction;
 use App\Mail\OrderCreated;
 use App\Models\FlashSale\FlashSaleUse;
 use App\Models\Order\Order;
 use App\Models\Payment\Payment;
 use App\Models\PPOB\PPOBProduct;
+use App\Models\Reseller\ResellerPriceUse;
 use App\Models\Voucher\Voucher;
 use App\Models\Voucher\VoucherUse;
 use App\Services\LinkQuService;
@@ -43,9 +45,23 @@ class StoreTransactionAction
         $product = PPOBProduct::find($data['product_id']);
         $flashSale = app(ResolveFlashSalePriceAction::class)->handle($product->id);
 
+        // Reseller pricing (flat % off sell_price) only applies when there's no
+        // active Flash Sale for this product - Flash Sale is a curated,
+        // time-boxed promo and always wins rather than stacking with the
+        // reseller discount. Reseller-priced orders accept any payment_type
+        // (balance, manual transfer, or automatic gateway) - a deliberate
+        // product decision to minimize signup friction, even though
+        // "automatic" releases fulfillment instantly on webhook with no
+        // human review and is therefore the least-guarded path for a
+        // discounted price.
+        $reseller = null;
+        if (! $flashSale && auth()->check() && auth()->user()->hasRole('reseller')) {
+            $reseller = app(ResolveResellerPriceAction::class)->handle($product->sell_price);
+        }
+
         $data['reference'] = $reference['code'];
         $data['ref_number'] = $reference['number'];
-        $data['amount'] = (int) ($flashSale['flash_price'] ?? $product->sell_price);
+        $data['amount'] = (int) ($flashSale['flash_price'] ?? $reseller['reseller_price'] ?? $product->sell_price);
         $data['flash_sale_id'] = $flashSale['flash_sale_id'] ?? null;
         $data['user_id'] = auth()->id() ?? null;
 
@@ -146,6 +162,20 @@ class StoreTransactionAction
                 'original_price' => $product->sell_price,
                 'flash_price' => $flashSale['flash_price'],
                 'discount_amount' => $product->sell_price - $flashSale['flash_price'],
+            ]);
+        }
+
+        // Record Reseller Price Usage (snapshot the original price and the
+        // discount percent in effect at purchase time, so historical orders
+        // stay accurate even if the setting or product price changes later)
+        if ($reseller) {
+            ResellerPriceUse::create([
+                'usable_type' => Order::class,
+                'usable_id' => $order->id,
+                'original_price' => $product->sell_price,
+                'reseller_price' => $reseller['reseller_price'],
+                'discount_amount' => $reseller['discount_amount'],
+                'discount_percent_snapshot' => $reseller['percent'],
             ]);
         }
 

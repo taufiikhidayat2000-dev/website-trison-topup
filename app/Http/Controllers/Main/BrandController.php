@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers\Main;
 
+use App\Actions\Reseller\ResolveResellerPriceAction;
 use App\Http\Controllers\Controller;
 use App\Models\FlashSale\FlashSale;
 use App\Models\PPOB\PPOBBrand;
 use App\Models\Review\Review;
 use App\Models\Web\Faq;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Response;
 
 class BrandController extends Controller
 {
+    public function __construct(
+        private readonly ResolveResellerPriceAction $resolveResellerPriceAction,
+    ) {}
+
     public function show(PPOBBrand $brand): Response
     {
         $brand->load(['products.media', 'products.productCategory.media', 'category']);
@@ -25,7 +31,11 @@ class BrandController extends Controller
             ? $flashSale->products->where('status', '!=', 'sold_out')->keyBy('p_p_o_b_product_id')
             : collect();
 
-        $brand->products->each(function ($product) use ($brand, $flashSaleProducts) {
+        // Reseller pricing only displays when there's no Flash Sale on the
+        // product - Flash Sale always wins rather than stacking discounts.
+        $isReseller = Auth::check() && Auth::user()->hasRole('reseller');
+
+        $brand->products->each(function ($product) use ($brand, $flashSaleProducts, $isReseller) {
             $product->image = $product->getFirstMediaUrl('image')
                 ?: $product->productCategory?->getFirstMediaUrl('image')
                 ?: $brand->default_product_image;
@@ -40,6 +50,8 @@ class BrandController extends Controller
                 $product->flash_discount_percent = $flashSaleProduct->discount_percent
                     ?? round((1 - $flashSaleProduct->flash_price / $displayOriginalPrice) * 100);
                 $product->flash_remaining_stock = $flashSaleProduct->remaining_stock;
+            } elseif ($isReseller) {
+                $product->reseller_price = $this->resolveResellerPriceAction->handle($product->sell_price)['reseller_price'];
             }
         });
 

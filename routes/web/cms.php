@@ -37,6 +37,9 @@ Route::group([
     // Member Routes
     require 'cms/member.php';
 
+    // Reseller Routes
+    require 'cms/reseller.php';
+
     // Deposit Routes
     require 'cms/deposit.php';
 

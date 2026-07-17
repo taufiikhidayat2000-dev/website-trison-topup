@@ -28,6 +28,7 @@ class AdminMenuSeeder extends Seeder
         $this->webMenu();
         $this->marketingMenu();
         $this->memberMenu();
+        $this->resellerMenu();
     }
 
     public function dashboardMenu()
@@ -166,6 +167,35 @@ class AdminMenuSeeder extends Seeder
             'url' => '/cms/deposits',
             'order' => 2,
             'active_pattern' => '/cms/deposits',
+            'status' => 1,
+        ]);
+    }
+
+    public function resellerMenu()
+    {
+        $reseller = Menu::create([
+            'role_id' => $this->role->id,
+            'name' => 'Reseller',
+            'url' => '#',
+            'icon' => 'Handshake',
+            'order' => 36,
+            'active_pattern' => '/cms/reseller',
+            'status' => 1,
+        ]);
+        $reseller->subMenu()->create([
+            'role_id' => $this->role->id,
+            'name' => 'Daftar Reseller',
+            'url' => '/cms/reseller',
+            'order' => 1,
+            'active_pattern' => '/cms/reseller',
+            'status' => 1,
+        ]);
+        $reseller->subMenu()->create([
+            'role_id' => $this->role->id,
+            'name' => 'Pengajuan Reseller',
+            'url' => '/cms/reseller/applications',
+            'order' => 2,
+            'active_pattern' => '/cms/reseller/applications',
             'status' => 1,
         ]);
     }

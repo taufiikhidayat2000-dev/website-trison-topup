@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\FlashSale\FlashSale;
 use App\Models\FlashSale\FlashSaleProduct;
 use App\Models\Order\Order;
+use App\Models\Reseller\ResellerApplication;
 use App\Models\Review\Review;
 use App\Models\User;
 use App\Models\Voucher\Voucher;
@@ -88,6 +89,9 @@ class PermissionSeeder extends Seeder
         'create'.FlashSaleProduct::class,
         'update'.FlashSaleProduct::class,
         'delete'.FlashSaleProduct::class,
+        'view'.ResellerApplication::class,
+        'show'.ResellerApplication::class,
+        'update'.ResellerApplication::class,
     ];
 
     // List user permissions
@@ -111,6 +115,10 @@ class PermissionSeeder extends Seeder
         $roleSuperAdmin = Role::findOrCreate('superadmin', $this->guardName);
         $roleAdmin = Role::findOrCreate('admin', $this->guardName);
         $roleUser = Role::findOrCreate('user', $this->guardName);
+        // Resellers are regular storefront customers with role-based pricing,
+        // not a CMS role - they don't need any permission grants below, only
+        // the role itself for auth()->user()->hasRole('reseller') checks.
+        Role::findOrCreate('reseller', $this->guardName);
 
         // Loop through each model and create permissions
         foreach ($this->prefixPermission as $permission) {

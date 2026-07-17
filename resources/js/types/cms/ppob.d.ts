@@ -80,6 +80,7 @@ export interface PPOBProductDataItem {
     flash_original_price?: number;
     flash_discount_percent?: number;
     flash_remaining_stock?: number;
+    reseller_price?: number | null;
 }
 
 export interface PPOBDepositDataItem {

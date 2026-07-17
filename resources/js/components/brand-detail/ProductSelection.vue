@@ -112,6 +112,12 @@ const filteredProducts = computed(() => {
                     >
                         -{{ product.flash_discount_percent }}%
                     </span>
+                    <span
+                        v-else-if="product.reseller_price != null"
+                        class="shrink-0 rounded-full bg-emerald-600 px-1.5 py-0.5 text-[10px] font-bold text-white"
+                    >
+                        Reseller
+                    </span>
                 </div>
                 <div
                     class="mt-2 flex flex-1 flex-col justify-between text-sm font-bold text-primary"
@@ -127,7 +133,10 @@ const filteredProducts = computed(() => {
                         </div>
                         <div>
                             <span
-                                v-if="product.flash_price != null"
+                                v-if="
+                                    product.flash_price != null ||
+                                    product.reseller_price != null
+                                "
                                 class="block text-xs font-medium text-muted-foreground line-through"
                             >
                                 {{
@@ -143,6 +152,7 @@ const filteredProducts = computed(() => {
                                 {{
                                     formatCurrency(
                                         product.flash_price ??
+                                            product.reseller_price ??
                                             product.sell_price,
                                     )
                                 }}</span

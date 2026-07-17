@@ -8,6 +8,7 @@ use App\Http\Controllers\Main\CreateDepositController;
 use App\Http\Controllers\Main\HomeController;
 use App\Http\Controllers\Main\PasswordController;
 use App\Http\Controllers\Main\ProfileController;
+use App\Http\Controllers\Main\ResellerController;
 use App\Http\Controllers\Main\ReviewController;
 use App\Http\Controllers\Main\SearchController;
 use App\Http\Controllers\Main\ShowDepositController;
@@ -36,6 +37,9 @@ Route::post('/transaction/{order}/review', [ReviewController::class, 'store'])->
 Route::get('/profile', [ProfileController::class, 'index'])->name('main.profile.index')->middleware('auth');
 Route::patch('/profile', [ProfileController::class, 'update'])->name('main.profile.update')->middleware('auth');
 Route::patch('/password', [PasswordController::class, 'update'])->name('main.password.update')->middleware('auth');
+
+Route::get('/reseller', [ResellerController::class, 'index'])->name('main.reseller.index')->middleware('auth');
+Route::post('/reseller', [ResellerController::class, 'store'])->name('main.reseller.store')->middleware('auth');
 
 Route::post('/deposits', CreateDepositController::class)->name('wallet.deposits.store')->middleware('auth');
 Route::get('/deposits/{deposit}', ShowDepositController::class)->name('wallet.deposits.show')->middleware('auth');
