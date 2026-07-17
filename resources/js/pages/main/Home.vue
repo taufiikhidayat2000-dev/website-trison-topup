@@ -68,7 +68,7 @@ const appUrl = page.props.app_url;
                     class="mb-8"
                     :slides="sliders"
                     :autoplay="true"
-                    :interval="50000"
+                    :interval="5000"
                 />
 
                 <!-- Flash Sale Section -->
