@@ -9,8 +9,8 @@ import { PaginationItem } from '@/types';
 import { DepositDataItem } from '@/types/cms/deposit';
 import { OrderDataItem } from '@/types/cms/main';
 import { BalanceMutationDataItem } from '@/types/cms/member';
-import { Head } from '@inertiajs/vue3';
-import { Lock, Receipt, User, Wallet } from 'lucide-vue-next';
+import { Head, Link } from '@inertiajs/vue3';
+import { Handshake, Lock, Receipt, User, Wallet } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 type Tab = 'profile' | 'password' | 'transactions' | 'deposit';
@@ -99,6 +99,14 @@ const activeTab = ref<Tab>('profile');
                                     <Wallet class="h-5 w-5" />
                                     Deposit
                                 </button>
+
+                                <Link
+                                    href="/reseller"
+                                    class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium text-muted-foreground transition-colors hover:bg-muted"
+                                >
+                                    <Handshake class="h-5 w-5" />
+                                    Reseller
+                                </Link>
                             </nav>
                         </div>
                     </div>

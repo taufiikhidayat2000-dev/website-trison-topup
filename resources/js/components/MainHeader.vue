@@ -127,12 +127,6 @@ const logout = () => {
                         Cek Transaksi
                     </Link>
                     <Link
-                        href="/reseller"
-                        class="text-sm font-semibold text-white transition-colors hover:text-cyan-300"
-                    >
-                        Reseller
-                    </Link>
-                    <Link
                         href="/profile"
                         class="text-sm font-semibold text-white transition-colors hover:text-cyan-300"
                     >
@@ -254,13 +248,6 @@ const logout = () => {
                     @click="closeMobileMenu"
                 >
                     Cek Transaksi
-                </Link>
-                <Link
-                    href="/reseller"
-                    class="block rounded-md px-3 py-2 text-base font-semibold text-white transition hover:bg-[#172554] hover:text-cyan-300"
-                    @click="closeMobileMenu"
-                >
-                    Reseller
                 </Link>
                 <Link
                     href="/profile"
