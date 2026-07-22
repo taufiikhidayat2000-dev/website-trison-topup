@@ -74,7 +74,12 @@ class PPOBProductController extends Controller
 
         return inertia('cms/ppob/ppob-product/Index', [
             'categories' => PPOBCategory::where('status', true)->get(),
-            'brands' => PPOBBrand::where('status', true)->where('p_p_o_b_category_id', $request->filter_category_id)->get(),
+            'brands' => PPOBBrand::where('status', true)
+                ->when($request->filter_category_id, function ($query) use ($request) {
+                    $query->where('p_p_o_b_category_id', $request->filter_category_id);
+                })
+                ->orderBy('name')
+                ->get(),
             'productCategories' => PPOBProductCategory::where('status', true)->get(),
             'filter_category_id' => (int) $request->filter_category_id ?? null,
             'filter_brand_id' => (int) $request->filter_brand_id ?? null,
