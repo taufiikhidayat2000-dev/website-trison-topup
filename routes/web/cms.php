@@ -8,7 +8,7 @@ use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 Route::group([
     'prefix' => 'cms',
     'as' => 'cms.',
-    'middleware' => ['auth', 'verified'],
+    'middleware' => ['auth', 'verified', 'admin.2fa'],
 ], function () {
     // Auto redirect to dashboard
     Route::get('/', HomeRedirectController::class)->name('home');
