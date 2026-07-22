@@ -19,7 +19,7 @@ test('users can authenticate using the login screen', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('cms.dashboard', absolute: false));
+    $response->assertRedirect(route('after-login', absolute: false));
 });
 
 test('users with two factor enabled are redirected to two factor challenge', function () {

@@ -10,10 +10,11 @@ test('new users can register', function () {
     $response = $this->post(route('register.store'), [
         'name' => 'Test User',
         'email' => 'test@example.com',
+        'phone' => '081234567899',
         'password' => 'password',
         'password_confirmation' => 'password',
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('cms.dashboard', absolute: false));
+    $response->assertRedirect(route('after-login', absolute: false));
 });
