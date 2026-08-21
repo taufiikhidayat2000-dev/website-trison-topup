@@ -11,13 +11,24 @@ import { useSwal } from '@/composables/useSwal';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatCurrency } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
-import { DigiflazzCategoryGroup } from '@/types/cms/ppob';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ChevronRight, Save } from 'lucide-vue-next';
 import { ref } from 'vue';
 
+interface LapakGamingProduct {
+    product_name: string;
+    buyer_sku_code: string;
+    price: number;
+    status: string | null;
+}
+
+interface LapakGamingBrandGroup {
+    name: string;
+    products: LapakGamingProduct[];
+}
+
 const props = defineProps<{
-    products: DigiflazzCategoryGroup[];
+    products: LapakGamingBrandGroup[];
     enabled: boolean;
 }>();
 
@@ -31,17 +42,9 @@ const breadcrumbItems: BreadcrumbItem[] = [
     { title: title, href: '#' },
 ];
 
-const openCategories = ref<string[]>([]);
+// LapakGaming has no brand tier of its own: each "category" it returns IS a
+// game/app, so it maps 1:1 to a PPOBBrand (see ImportLapakGamingController).
 const openBrands = ref<string[]>([]);
-
-const isCategoryOpen = (name: string) => openCategories.value.includes(name);
-const toggleCategoryOpen = (name: string) => {
-    if (isCategoryOpen(name)) {
-        openCategories.value = openCategories.value.filter((n) => n !== name);
-    } else {
-        openCategories.value.push(name);
-    }
-};
 
 const isBrandOpen = (name: string) => openBrands.value.includes(name);
 const toggleBrandOpen = (name: string) => {
@@ -95,10 +98,10 @@ const submit = () => {
 
             <div class="space-y-2">
                 <Collapsible
-                    v-for="category in products"
-                    :key="category.name"
-                    :open="openCategories.includes(category.name)"
-                    @update:open="toggleCategoryOpen(category.name)"
+                    v-for="brand in products"
+                    :key="brand.name"
+                    :open="openBrands.includes(brand.name)"
+                    @update:open="toggleBrandOpen(brand.name)"
                     class="rounded-lg border bg-card text-card-foreground shadow-sm"
                 >
                     <div class="flex items-center gap-2 p-4">
@@ -108,83 +111,45 @@ const submit = () => {
                             <ChevronRight
                                 class="h-4 w-4 transition-transform duration-200"
                                 :class="{
-                                    'rotate-90': isCategoryOpen(category.name),
+                                    'rotate-90': isBrandOpen(brand.name),
                                 }"
                             />
                         </CollapsibleTrigger>
-                        <span class="font-medium">{{ category.name }}</span>
+                        <span class="font-medium">{{ brand.name }}</span>
                         <span class="ml-auto text-sm text-muted-foreground">
-                            {{ category.brands.length }} Brands
+                            {{ brand.products.length }} Products
                         </span>
                     </div>
 
                     <CollapsibleContent>
-                        <div class="ml-6 space-y-2 border-l pr-4 pb-4 pl-4">
-                            <Collapsible
-                                v-for="brand in category.brands"
-                                :key="brand.name"
-                                :open="openBrands.includes(brand.name)"
-                                @update:open="toggleBrandOpen(brand.name)"
-                                class="rounded-lg border bg-card text-card-foreground shadow-sm"
+                        <div
+                            class="ml-6 grid grid-cols-1 gap-2 border-l pr-4 pb-4 pl-4 md:grid-cols-2 lg:grid-cols-3"
+                        >
+                            <div
+                                v-for="product in brand.products"
+                                :key="product.buyer_sku_code"
+                                class="flex items-start gap-2 rounded-md border p-3"
                             >
-                                <div class="flex items-center gap-2 p-3">
-                                    <CollapsibleTrigger
-                                        class="rounded-md p-1 hover:bg-muted"
-                                    >
-                                        <ChevronRight
-                                            class="h-4 w-4 transition-transform duration-200"
-                                            :class="{
-                                                'rotate-90': isBrandOpen(
-                                                    brand.name,
-                                                ),
-                                            }"
-                                        />
-                                    </CollapsibleTrigger>
-                                    <span class="font-medium">{{
-                                        brand.name
-                                    }}</span>
-                                    <span
-                                        class="ml-auto text-sm text-muted-foreground"
-                                    >
-                                        {{ brand.products.length }} Products
-                                    </span>
-                                </div>
-
-                                <CollapsibleContent>
-                                    <div
-                                        class="ml-6 grid grid-cols-1 gap-2 border-l pt-2 pl-4 md:grid-cols-2 lg:grid-cols-3"
-                                    >
-                                        <div
-                                            v-for="product in brand.products"
-                                            :key="product.buyer_sku_code"
-                                            class="flex items-start gap-2 rounded-md border p-3"
-                                        >
-                                            <div class="grid flex-1 gap-1">
-                                                <div
-                                                    class="leading-none font-medium"
-                                                >
-                                                    {{ product.product_name }}
-                                                </div>
-                                                <div
-                                                    class="text-xs text-muted-foreground"
-                                                >
-                                                    SKU:
-                                                    {{ product.buyer_sku_code }}
-                                                </div>
-                                                <div
-                                                    class="text-sm font-semibold"
-                                                >
-                                                    {{
-                                                        formatCurrency(
-                                                            product.price,
-                                                        )
-                                                    }}
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div class="grid flex-1 gap-1">
+                                    <div class="leading-none font-medium">
+                                        {{ product.product_name }}
                                     </div>
-                                </CollapsibleContent>
-                            </Collapsible>
+                                    <div
+                                        class="text-xs text-muted-foreground"
+                                    >
+                                        SKU: {{ product.buyer_sku_code }}
+                                    </div>
+                                    <div class="text-sm font-semibold">
+                                        {{ formatCurrency(product.price) }}
+                                    </div>
+                                    <div
+                                        v-if="product.status === 'empty'"
+                                        class="text-xs text-destructive"
+                                    >
+                                        Stok kosong
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </CollapsibleContent>
                 </Collapsible>

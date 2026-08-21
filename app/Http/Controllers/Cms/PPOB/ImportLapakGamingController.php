@@ -26,29 +26,27 @@ class ImportLapakGamingController extends Controller
     {
         Gate::authorize('view'.$this->resource);
 
-        $products = $this->lapakGamingService->isEnabled()
-            ? $this->lapakGamingService->getAllProducts()
-            : [];
+        $enabled = $this->lapakGamingService->isEnabled();
+        $categories = $enabled ? collect($this->lapakGamingService->getCategories())->keyBy('code') : collect();
+        $products = $enabled ? collect($this->lapakGamingService->getAllProducts()) : collect();
 
-        $groupedProducts = collect($products)->groupBy('category')->map(function ($items, $category) {
+        // LapakGaming has no brand tier: a category IS the game/app, so it
+        // maps directly to a PPOBBrand (see ImportLapakGaming\SyncPPOBProductAction).
+        $groupedProducts = $products->groupBy('category_code')->map(function ($items, $categoryCode) use ($categories) {
             return [
-                'name' => $category,
-                'brands' => $items->groupBy('brand')->map(function ($brandItems, $brand) {
-                    return [
-                        'name' => $brand,
-                        'products' => $brandItems->map(fn ($item) => [
-                            'product_name' => $item['product_name'],
-                            'buyer_sku_code' => $item['product_code'],
-                            'price' => $item['price'],
-                        ])->values(),
-                    ];
-                })->values(),
+                'name' => $categories->get($categoryCode)['name'] ?? $categoryCode,
+                'products' => $items->map(fn ($item) => [
+                    'product_name' => $item['name'],
+                    'buyer_sku_code' => $item['code'],
+                    'price' => $item['price'],
+                    'status' => $item['status'] ?? null,
+                ])->values(),
             ];
         })->values();
 
         return inertia('cms/ppob/import-lapakgaming/Index', [
             'products' => $groupedProducts,
-            'enabled' => $this->lapakGamingService->isEnabled(),
+            'enabled' => $enabled,
         ]);
     }
 

@@ -9,12 +9,8 @@ use Illuminate\Support\Facades\Log;
 /**
  * LapakGaming Reseller API client.
  *
- * NOT LIVE YET: no reseller account/secret key exists for this project.
- * Base URLs and auth (Bearer secret key + IP whitelist) are confirmed from
- * https://documenter.getpostman.com/view/5668891/2s9XxvTujb, but the exact
- * endpoint paths below are our best-effort guess following that same
- * documentation's method names — verify each path against the official
- * Postman collection (or ask LapakGaming support) before enabling.
+ * Endpoints/params verified against the official Postman collection:
+ * https://documenter.getpostman.com/view/5668891/2s9XxvTujb
  */
 class LapakGamingService
 {
@@ -52,7 +48,7 @@ class LapakGamingService
             }
 
             return (int) Cache::flexible($this->prefixCacheKey.'balance', [60, 120], function () {
-                $response = $this->client()->get('/api/reseller/balance');
+                $response = $this->client()->get('/api/balance');
 
                 if (! $response->successful()) {
                     throw new \Exception('Failed to fetch balance from LapakGaming');
@@ -68,9 +64,37 @@ class LapakGamingService
     }
 
     /**
-     * Get all products grouped by category/brand, shaped the same way
-     * DigiflazzService::getPrepaidProducts() returns its data so the
-     * import controller/action can reuse the same grouping logic.
+     * Get every category (one category = one game/app), including the
+     * `forms` (which input fields checkout needs) and `servers` list used
+     * to build the PPOBBrand checkout settings.
+     */
+    public function getCategories(bool $refresh = false): array
+    {
+        try {
+            if ($refresh) {
+                Cache::forget($this->prefixCacheKey.'categories');
+            }
+
+            return Cache::remember($this->prefixCacheKey.'categories', now()->addDay(), function () {
+                $response = $this->client()->get('/api/category');
+
+                if (! $response->successful()) {
+                    throw new \Exception('Failed to fetch categories from LapakGaming');
+                }
+
+                return $response->json('data.categories', []);
+            });
+        } catch (\Exception $e) {
+            Log::error('LapakGamingService@getCategories: '.$e->getMessage());
+
+            return [];
+        }
+    }
+
+    /**
+     * Get all products across every category. Each item has:
+     * code, category_code, name, provider_code, price, process_time,
+     * country_code, status ('available'|'empty').
      */
     public function getAllProducts(bool $refresh = false): array
     {
@@ -80,33 +104,16 @@ class LapakGamingService
             }
 
             return Cache::remember($this->prefixCacheKey.'products', now()->addDay(), function () {
-                $response = $this->client()->get('/api/reseller/products');
+                $response = $this->client()->get('/api/all-products');
 
                 if (! $response->successful()) {
                     throw new \Exception('Failed to fetch products from LapakGaming');
                 }
 
-                return $response->json('data', []);
+                return $response->json('data.products', []);
             });
         } catch (\Exception $e) {
             Log::error('LapakGamingService@getAllProducts: '.$e->getMessage());
-
-            return [];
-        }
-    }
-
-    public function getCategories(): array
-    {
-        try {
-            $response = $this->client()->get('/api/reseller/categories');
-
-            if (! $response->successful()) {
-                throw new \Exception('Failed to fetch categories from LapakGaming');
-            }
-
-            return $response->json('data', []);
-        } catch (\Exception $e) {
-            Log::error('LapakGamingService@getCategories: '.$e->getMessage());
 
             return [];
         }
@@ -119,40 +126,49 @@ class LapakGamingService
      */
     public function createOrder(
         string $productCode,
-        string $userId,
-        ?string $serverId,
-        string $partnerReferenceId,
+        ?string $userId = null,
+        ?string $serverId = null,
+        ?string $partnerReferenceId = null,
         int $quantity = 1,
-        string $countryCode = 'id',
+        ?string $endUserIpAddress = null,
     ): array {
-        $response = $this->client()->post('/api/reseller/order/create', [
-            'product_code' => $productCode,
+        $body = array_filter([
             'user_id' => $userId,
-            'server_id' => $serverId,
-            'quantity' => $quantity,
-            'country_code' => $countryCode,
+            'additional_id' => $serverId,
+            'count_order' => $quantity,
+            'product_code' => $productCode,
             'partner_reference_id' => $partnerReferenceId,
-            'callback_url' => config('lapakgaming.callback_url'),
-        ]);
+            'end_user_ip_address' => $endUserIpAddress,
+        ], fn ($value) => $value !== null && $value !== '');
+
+        if ($callbackUrl = config('lapakgaming.callback_url')) {
+            $body['override_callback_url'] = $callbackUrl;
+        }
+
+        $response = $this->client()->post('/api/order', $body);
 
         $json = $response->json() ?? [];
+        $successful = $response->successful() && ($json['code'] ?? null) === 'SUCCESS';
 
         return [
-            'successful' => $response->successful() && ($json['code'] ?? null) === 'SUCCESS',
+            'successful' => $successful,
             'transaction_id' => $json['data']['tid'] ?? null,
-            'message' => $json['data']['message'] ?? $json['code'] ?? 'Failed to create LapakGaming order',
+            'message' => $successful ? 'SUCCESS' : ($json['code'] ?? 'Failed to create LapakGaming order'),
             'raw' => $json,
         ];
     }
 
     /**
-     * Check order status by partner reference id.
+     * Check order status by transaction id and/or our partner reference id.
      */
-    public function checkOrderStatus(string $partnerReferenceId): array
+    public function checkOrderStatus(?string $tid = null, ?string $partnerReferenceId = null): array
     {
-        $response = $this->client()->get('/api/reseller/order/status', [
+        $query = array_filter([
+            'tid' => $tid,
             'partner_reference_id' => $partnerReferenceId,
         ]);
+
+        $response = $this->client()->get('/api/order_status', $query);
 
         return $response->json() ?? [];
     }
